@@ -99,7 +99,43 @@ sub CoulombIntegralsFromVertex ( Str :mode($mode) = "None"
 
 }
 
-sub CcsdEnergyFromCoulombIntegrals () is export {
+sub Mp2EnergyFromCoulombIntegrals ( Str :integrals(@integrals)
+                                  , Str :mp2Energy($mp2Energy) = ""
+                                  , Str :mp2Amplitudes($mp2Amplitudes) = ""
+                                  ) is export {
 
+  if !@integrals.grep( * ~~ "PPHHCoulombIntegrals" )
+    { die "Wrong integrals for routine Mp2EnergyFromCoulombIntegrals"};
+  my Str $output = "Mp2EnergyFromCoulombIntegrals [\n";
+  $output ~= "  PPHHCoulombIntegrals HoleEigenEnergies ParticleEigenEnergies\n] [\n";
+  if $mp2Energy { $output ~= "  (Mp2Energy " ~ $mp2Energy ~ ")\n"; }
+  else { $output ~= "  Mp2Energy\n" };
+  if $mp2Amplitudes { $output ~= "  ( Mp2DoublesAmplitudes " ~ $mp2Amplitudes ~ ")\n" };
+  $output ~= "].\n";
+
+}
+
+sub CcsdEnergyFromCoulombIntegrals ( Str :integrals(@integrals)
+                                   , Str :ccsdEnergy($ccsdEnergy) = ""
+                                   , Str :ccsdSinglesAmplitudes($ccsdSinglesAmplitudes) = ""
+                                   , Str :ccsdDoublesAmplitudes($ccsdDoublesAmplitudes) = ""
+  ) is export {
+
+  my Str $output = "CcsdEnergyFromCoulombIntegrals [\n";
+## INPUT
+  $output ~= "  HoleEigenEnergies\n  ParticleEigenEnergies\n";
+  #TODO: check if the given Integrals are working....we can never trust the user
+  for @integrals -> $i { $output ~= "  " ~ $i ~ "\n" };
+  $output ~= "] [\n";
+## OUTPUT
+  if $ccsdEnergy { $output ~= "  (CcsdEnergy " ~ $ccsdEnergy ~ ")\n"; }
+  else { $output ~= "  CcsdEnergy\n"; }
+  if $ccsdSinglesAmplitudes {
+    $output ~= "  ( CcsdSinglesAmplitudes " ~ $ccsdSinglesAmplitudes ~ ")\n"
+  };
+  if $ccsdDoublesAmplitudes {
+    $output ~= "  ( CcsdDoublesAmplitudes " ~ $ccsdDoublesAmplitudes ~ ")\n"
+  };
+  $output ~= "].\n";
 
 }
