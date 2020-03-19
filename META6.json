@@ -9,7 +9,7 @@
   "license" : "GPLv3",
   "meta6" : "0",
   "name" : "Cc4s",
-  "perl" : "6.c",
+  "perl" : "6.*",
   "provides" : {
     "Readline" : "lib/Cc4s.pm"
   },
