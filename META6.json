@@ -1,0 +1,26 @@
+{
+  "authors" : [
+    "Alejandro Gallo <alejandro.gallo@tuwien.ac.at>",
+    "Andreas Irmler <andreas.irmler@tuwien.ac.at>"
+  ],
+  "build-depends" : [ ],
+  "depends" : [ ],
+  "description" : "Perl 6 interface to cc4s",
+  "license" : "GPLv3",
+  "meta6" : "0",
+  "name" : "Cc4s",
+  "perl" : "6.c",
+  "provides" : {
+    "Readline" : "lib/Cc4s.pm"
+  },
+  "resources" : [ ],
+  "source-url" : "https://gitlab.com/alejandroamsg/cc4s-raku.git",
+  "support" : {
+    "source" : "https://gitlab.com/alejandroamsg/cc4s-raku"
+  },
+  "tags" : [
+    "terminal", "quantum chemistry", "quantum", "CLI"
+  ],
+  "test-depends" : [ ],
+  "version" : "0.0.1"
+}
