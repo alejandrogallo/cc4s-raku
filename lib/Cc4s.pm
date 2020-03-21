@@ -1,141 +1,163 @@
+# vim:ft=raku
 use v6;
 
 unit module Cc4s;
 
-#########LIST OF SUPPORTED ALGORITHM
-####### DONE #####
-# TensorReader TensorWriter
-# ComplexTensorWriter ComplexTensorReader CoulombIntegralsFromVertex
-##### MISSING ####
-# CcsdEnergyFromCoulombIntegrals CcsdEnergyFromCoulombIntegralsReference
-# ParenthesisTriples
+subset Boolean   of Int  where * ∈ (0, 1);
+subset DataType  of Str  where * (elem) < RealTensor ComplexTensor >;
+subset StrInput  of List where (Str, Str);
+# write DataType to differentiate DataInput from StrInput
+subset DataInput of List where (Str, Str, DataType);
+subset IntInput  of List where (Str, Int);
+subset BoolInput of List where (Str, Boolean);
+subset RealInput of List where (Str, Real);
+subset NoInput   of List where ();
+subset Input     of List where StrInput  | DataInput | IntInput
+                             | RealInput | BoolInput | NoInput
+                             ;
 
+multi sub to-string(NoInput $a) of Str is export {""}
+multi sub to-string(StrInput $a) of Str is export {qq!({$a.head} "{$a.tail}")!}
+multi sub to-string(DataInput $a) of Str is export {
+  ($a.head ~~ $a[1]) ?? $a.head !! qq!({$a.head} {$a[1]})!
+}
+multi sub to-string(Input $a) of Str is export {qq!($a)!}
+
+class Algorithm is export {
+  has Str $.name;
+  has Input @.inputs;
+  has Input @.outputs;
+  method Str {qq!
+$.name [
+  { (@.inputs  ==> map &to-string ==> grep /^^ . + $$/ ).join: "\n  " }
+] [
+  { (@.outputs ==> map &to-string ==> grep /^^ . + $$/ ).join: "\n  " }
+].
+!.subst: /^^ \s+ $$/, ""}
+}
+
+subset CoulombIntegral of Str
+  where * ∈ (([X~] $_ xx 4) X~ <CoulombIntegral> given < H P >);
 
 sub TensorIO ( Str :name($name)
              , Str :data($data)
              , Str :file($file) = ""
-             , Str :mode($mode) where * (elem) < binary text > = "text"
-             ) {
-
-  my Str $output = $name;
-  $output ~= "[";
-  $output ~= "(data " ~ $data ~ ")";
-  if $file { $output ~= " (file \""~$file~"\")" };
-  if $mode ~~ "binary" { $output ~= "  (mode \"binary\")" };
-  $output ~= "][].\n";
-
-}
-## TODO: change Str :mode because we should be consistent with cc4s.
-##       There is only "binary" or nothing. When I try "bin" it crashes....not necessary
-sub TensorReader ( Str :data($data)
-                , Str :file($file) = ""
-                , Str :mode($mode) where * (elem) < binary text > = "text"
-                ) is export {
-
-  TensorIO( name => "TensorReader", data => $data, file => $file, mode => $mode);
-
+             , Bool :bin($bin) = False
+             , DataType :dtype($dtype) = <RealTensor>
+             ) of Algorithm {
+  Algorithm.new:
+    :name($name)
+    :inputs( (<data>, $data, $dtype)
+           , (<file>, $file)
+           , $bin ?? (<mode>, <binary>) !! ()
+           )
 }
 
-sub TensorWriter ( Str :data($data)
-                , Str :file($file) = ""
-                , Str :mode($mode) where * (elem) < binary text > = "text"
-                ) is export {
+our &TensorReader is export = &TensorIO.assuming(:name<TensorReader>);
+our &TensorWriter is export = &TensorIO.assuming(:name<TensorWriter>);
+our &ComplexTensorReader is export
+    = &TensorIO.assuming(:name<ComplexTensorReader>,
+                         :dtype<ComplexTensor>);
+our &ComplexTensorWriter is export
+    = &TensorIO.assuming(:name<ComplexTensorWriter>,
+                         :dtype<ComplexTensor>);
 
-  TensorIO( name => "TensorWriter", data => $data, file => $file, mode => $mode);
+our
+sub CoulombVertexReader( Str :file($file)
+                       , Str :vertex($vertex) = <CoulombVertex>
+                       , Str :e-holes($h) = <HoleEigenEnergies>
+                       , Str :e-particles($p) = <ParticleEigenEnergies>
+                       ) is export {
 
-}
-
-sub ComplexTensorReader ( Str :data($data)
-                , Str :file($file) = ""
-                , Str :mode($mode) where * (elem) < binary text > = "text"
-                ) is export {
-
-  TensorIO( name => "ComplexTensorReader", data => $data, file => $file, mode => $mode);
+  Algorithm.new:
+    :name<CoulombVertexReader>
+    :inputs( (<file>, $file)
+           , (<CoulombVertex>, $vertex, <RealTensor>)
+           , (<HoleEigenEnergies>, $h, <RealTensor>)
+           , (<ParticleEigenEnergies>, $p, <RealTensor>)
+           )
 
 }
 
-sub ComplexTensorWriter ( Str :data($data)
-                , Str :file($file) = ""
-                , Str :mode($mode) where * (elem) < binary text > = "text"
-                ) is export {
-
-  TensorIO( name => "ComplexTensorWriter", data => $data, file => $file, mode => $mode);
-
-}
-
-sub CoulombVertexReader( Str :file($file) ) is export {
-
-  my Str $output = "CoulombVertexReader [\n";
-  $output ~= "(file \""~$file~"\")\n] [\n";
-  $output ~= "   CoulombVertex  HoleEigenEnergies ParticleEigenEnergies \n].\n";
-
-
-}
-
-sub CoulombIntegralsFromVertex ( Str :mode($mode) = "None"
-                               , Str :integrals(@integrals)
+our
+sub CoulombIntegralsFromVertex ( Str :vertex($v) = <CoulombVertex>
+                               , Str :e-holes($h) = <HoleEigenEnergies>
+                               , Str :e-particles($p) = <ParticleEigenEnergies>
+                               , *%ints
                                ) is export {
-  my Str @XXXX = [ "PHPH", "PPHH", "HHHH", "HHHP", "PPPP", "PPPH",
-                   "PHHH", "HHPP", "PHHP", "HPHH", "HPHP", "HPPP",
-                   "PPHP", "HPPH", "HHPH", "PHPP" ];
-  my Str $ci = "CoulombIntegrals";
-  my Str @integralList;
-  if $mode ~~ "mp2"     { @integralList.push: @XXXX[1]~$ci };
-  if $mode ~~ "ccsd"    { for 0..4 -> $i { @integralList.push: @XXXX[$i]~$ci } };
-  if $mode ~~ "ccsdref" { for 0..6 -> $i { @integralList.push: @XXXX[$i]~$ci } };
-  if $mode ~~ "kccsd"   { say "Kein Plan alter" };
-  if $mode ~~ "None" {
-    for @XXXX -> $i {
-      my Str $xint = $i~"CoulombIntegrals";
-      if @integrals.grep( * ~~ $xint) { @integralList.push: $xint };
-    }
-  }
-
-  if !@integralList { return "%WARNING: CoulombIntegralsFromVertex w/o valid arguments ";}
-  my Str $output = "CoulombIntegralsFromVertex [\n";
-  $output ~= "  CoulombVertex HoleEigenEnergies ParticleEigenEnergies\n] [\n";
-  for @integralList -> $i { $output ~= "  "~$i~"\n" };
-  $output ~= "].\n";
-
+  Algorithm.new:
+    :name<CoulombIntegralsFromVertex>
+    :inputs( (<CoulombVertex>, $v, <RealTensor>)
+           , (<HoleEigenEnergies>, $h, <RealTensor>)
+           , (<ParticleEigenEnergies>, $p, <RealTensor>)
+           )
+    :outputs(for
+                 # get only things with keys being a CoulombIntegral
+                 (%ints ==> grep {$_.keys[0] ~~ CoulombIntegral})
+                 # name of the integral
+                 {( $_.keys[0]
+                 # name of the user integral, if non given, the name of
+                 # the integral is given
+                 , ($_.values[0] eq True) ?? $_.keys[0] !! $_.values[0]
+                 # datat type
+                 , <RealTensor>
+                 )})
 }
 
-sub Mp2EnergyFromCoulombIntegrals ( Str :integrals(@integrals)
-                                  , Str :mp2Energy($mp2Energy) = ""
-                                  , Str :mp2Amplitudes($mp2Amplitudes) = ""
-                                  ) is export {
+our sub mp2-integrals { :PPHHCoulombIntegral }
 
-  if !@integrals.grep( * ~~ "PPHHCoulombIntegrals" )
-    { die "Wrong integrals for routine Mp2EnergyFromCoulombIntegrals"};
-  my Str $output = "Mp2EnergyFromCoulombIntegrals [\n";
-  $output ~= "  PPHHCoulombIntegrals HoleEigenEnergies ParticleEigenEnergies\n] [\n";
-  if $mp2Energy { $output ~= "  (Mp2Energy " ~ $mp2Energy ~ ")\n"; }
-  else { $output ~= "  Mp2Energy\n" };
-  if $mp2Amplitudes { $output ~= "  ( Mp2DoublesAmplitudes " ~ $mp2Amplitudes ~ ")\n" };
-  $output ~= "].\n";
-
+our sub ccsd-integrals {
+  my CoulombIntegral @o = < PHPH PPHH HHHH HHHP > X~
+                          <CoulombIntegral>;
+  %(for @o { $_ => True })
 }
 
-sub CcsdEnergyFromCoulombIntegrals ( Str :integrals(@integrals)
-                                   , Str :ccsdEnergy($ccsdEnergy) = ""
-                                   , Str :ccsdSinglesAmplitudes($ccsdSinglesAmplitudes) = ""
-                                   , Str :ccsdDoublesAmplitudes($ccsdDoublesAmplitudes) = ""
+our sub ccsd-ref-integrals {
+  my CoulombIntegral @o = < PHPH PPHH HHHH HHHP PPPP PPPH > X~
+                          <CoulombIntegral>;
+  %(for @o { $_ => True })
+}
+
+our
+sub Mp2EnergyFromCoulombIntegrals
+  ( Str :PPHHCoulombIntegral($pphh) = <PPHHCoulombIntegral>
+  , Str :e-holes($h) = <HoleEigenEnergies>
+  , Str :e-particles($p) = <ParticleEigenEnergies>
+  , Str :energy($energy) = <Mp2Energy>
+  , Str :amplitudes($amplitudes) = <Mp2DoublesAmplitudes>
   ) is export {
 
-  my Str $output = "CcsdEnergyFromCoulombIntegrals [\n";
-## INPUT
-  $output ~= "  HoleEigenEnergies\n  ParticleEigenEnergies\n";
-  #TODO: check if the given Integrals are working....we can never trust the user
-  for @integrals -> $i { $output ~= "  " ~ $i ~ "\n" };
-  $output ~= "] [\n";
-## OUTPUT
-  if $ccsdEnergy { $output ~= "  (CcsdEnergy " ~ $ccsdEnergy ~ ")\n"; }
-  else { $output ~= "  CcsdEnergy\n"; }
-  if $ccsdSinglesAmplitudes {
-    $output ~= "  ( CcsdSinglesAmplitudes " ~ $ccsdSinglesAmplitudes ~ ")\n"
-  };
-  if $ccsdDoublesAmplitudes {
-    $output ~= "  ( CcsdDoublesAmplitudes " ~ $ccsdDoublesAmplitudes ~ ")\n"
-  };
-  $output ~= "].\n";
+  Algorithm.new:
+    :name<Mp2EnergyFromCoulombIntegrals>
+    :inputs( (<HoleEigenEnergies>, $h, <RealTensor>)
+           , (<ParticleEigenEnergies>, $p, <RealTensor>)
+           , (<PPHHCoulombIntegral>, $pphh, <RealTensor>)
+           )
+    :outputs( (<Mp2Energy>, $energy, <RealTensor>)
+            , (<Mp2DoublesAmplitudes>, $amplitudes, <RealTensor>)
+            )
+
+}
+
+our
+sub CcsdEnergyFromCoulombIntegrals
+  ( Str :PPHHCoulombIntegral($pphh) = <PPHHCoulombIntegral>
+  , Str :e-holes($h) = <HoleEigenEnergies>
+  , Str :e-particles($p) = <ParticleEigenEnergies>
+  , Str :energy($energy) = <CcsdEnergy>
+  , Str :singles-amplitudes($tai) = <CcsdSinglesAmplitudes>
+  , Str :doubles-amplitudes($tabij) = <CcsdDoublesAmplitudes>
+  ) is export {
+
+  Algorithm.new:
+    :name<CcsdEnergyFromCoulombIntegrals>
+    :inputs( (<HoleEigenEnergies>, $h, <RealTensor>)
+           , (<ParticleEigenEnergies>, $p, <RealTensor>)
+           , (<PPHHCoulombIntegral>, $pphh, <RealTensor>)
+           )
+    :outputs( (<CcsdEnergy>, $energy, <RealTensor>)
+            , (<CcsdSinglesAmplitudes>, $tai, <RealTensor>)
+            , (<CcsdDoublesAmplitudes>, $tabij, <RealTensor>)
+            )
 
 }
