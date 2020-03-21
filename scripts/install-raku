@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -eux
+
+mkdir -p ~/.raku
+wget \
+https://rakudo.org/dl/rakudo/rakudo-moar-2020.01-01-linux-x86_64.tar.gz \
+-O - |
+gunzip |
+tar xvf - -C ~/.raku --strip-components=1

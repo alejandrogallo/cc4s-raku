@@ -5,7 +5,9 @@ test:
   stage: test
   script:
   - apt-get update -qy
-  - apt-get install -y rakudo
+  - apt-get install -y wget gunzip
+  - ./scripts/install-raku
   - export PERL6LIB=$PWD/lib
+  - export PATH=$HOME/.raku/bin:$PATH
   - make test
 
