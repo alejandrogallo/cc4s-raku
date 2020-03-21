@@ -1,0 +1,11 @@
+stages:
+  - test
+
+test:
+  stage: test
+  script:
+  - apt-get update -qy
+  - apt-get install -y rakudo
+  - export PERL6LIB=$PWD/lib
+  - make test
+
