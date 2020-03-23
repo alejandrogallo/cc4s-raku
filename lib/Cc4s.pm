@@ -40,6 +40,11 @@ $.name [
 ].
 !.subst: /^^ \s+ $$/, ""}
 
+  method add-inputs (@i) of Algorithm { @.inputs.append:
+                                          Array[Input].new(@i); self }
+  method add-outputs (@o) of Algorithm { @.outputs.append:
+                                          Array[Input].new(@o); self }
+
   method help {qq!
 We just want to help you. Here I want an overview of possible input/output
 variables. Optional and maybe also mandatory.
