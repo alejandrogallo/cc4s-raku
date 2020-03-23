@@ -34,21 +34,26 @@ $.name [
   { (@.outputs ==> map &to-string ==> grep /^^ . + $$/ ).join: "\n  " }
 ].
 !.subst: /^^ \s+ $$/, ""}
+
+  method help {qq!
+We just want to help you. Here I want an overview of possible input/output
+variables. Optional and maybe also mandatory.
+!}
 }
 
 subset CoulombIntegral of Str
   where * ∈ (([X~] $_ xx 4) X~ <CoulombIntegral> given < H P >);
 
 sub TensorIO ( Str :name($name)
-             , Str :data($data)
+             , Str :Data($data)
              , Str :file($file) = ""
              , Bool :bin($bin) = False
              , DataType :dtype($dtype) = <RealTensor>
              ) of Algorithm {
   Algorithm.new:
     :name($name)
-    :inputs( (<data>, $data, $dtype)
-           , (<file>, $file)
+    :inputs( (<Data>, $data, $dtype)
+           , $file ?? (<file>, $file) !! ()
            , $bin ?? (<mode>, <binary>) !! ()
            )
 }
@@ -63,7 +68,7 @@ our &ComplexTensorWriter is export
                          :dtype<ComplexTensor>);
 
 our
-sub CoulombVertexReader( Str :file($file)
+sub CoulombVertexReader( Str :file($file) = <VertexFileName>
                        , Str :vertex($vertex) = <CoulombVertex>
                        , Str :e-holes($h) = <HoleEigenEnergies>
                        , Str :e-particles($p) = <ParticleEigenEnergies>
@@ -71,11 +76,12 @@ sub CoulombVertexReader( Str :file($file)
 
   Algorithm.new:
     :name<CoulombVertexReader>
-    :inputs( (<file>, $file)
-           , (<CoulombVertex>, $vertex, <RealTensor>)
-           , (<HoleEigenEnergies>, $h, <RealTensor>)
-           , (<ParticleEigenEnergies>, $p, <RealTensor>)
+    :inputs( (<file>, $file),
            )
+    :outputs( (<CoulombVertex>, $vertex, <RealTensor>)
+            , (<HoleEigenEnergies>, $h, <RealTensor>)
+            , (<ParticleEigenEnergies>, $p, <RealTensor>)
+            )
 
 }
 
@@ -142,22 +148,30 @@ sub Mp2EnergyFromCoulombIntegrals
 our
 sub CcsdEnergyFromCoulombIntegrals
   ( Str :PPHHCoulombIntegral($pphh) = <PPHHCoulombIntegral>
+  , Str :PHPHCoulombIntegral($phph) = <PHPHCoulombIntegral>
+  , Str :HHHHCoulombIntegral($hhhh) = <HHHHCoulombIntegral>
+  , Str :HHHPCoulombIntegral($hhhp) = <HHHPCoulombIntegral>
+  , Str :vertex($vertex) = <CoulombVertex>
   , Str :e-holes($h) = <HoleEigenEnergies>
   , Str :e-particles($p) = <ParticleEigenEnergies>
   , Str :energy($energy) = <CcsdEnergy>
-  , Str :singles-amplitudes($tai) = <CcsdSinglesAmplitudes>
-  , Str :doubles-amplitudes($tabij) = <CcsdDoublesAmplitudes>
+  , Str :singles-amplitudes($tai) = ""
+  , Str :doubles-amplitudes($tabij) = ""
   ) is export {
 
   Algorithm.new:
     :name<CcsdEnergyFromCoulombIntegrals>
-    :inputs( (<HoleEigenEnergies>, $h, <RealTensor>)
+    :inputs( (<CoulombVertex>, $vertex, <RealTensor>)
+           , (<HoleEigenEnergies>, $h, <RealTensor>)
            , (<ParticleEigenEnergies>, $p, <RealTensor>)
            , (<PPHHCoulombIntegral>, $pphh, <RealTensor>)
+           , (<PHPHCoulombIntegral>, $phph, <RealTensor>)
+           , (<HHHHCoulombIntegral>, $hhhh, <RealTensor>)
+           , (<HHHPCoulombIntegral>, $hhhp, <RealTensor>)
            )
     :outputs( (<CcsdEnergy>, $energy, <RealTensor>)
-            , (<CcsdSinglesAmplitudes>, $tai, <RealTensor>)
-            , (<CcsdDoublesAmplitudes>, $tabij, <RealTensor>)
+            , $tai ?? (<CcsdSinglesAmplitudes>, $tai, <RealTensor>) !! ()
+            , $tabij ?? (<CcsdDoublesAmplitudes>, $tabij, <RealTensor>) !! ()
             )
 
 }
