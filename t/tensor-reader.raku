@@ -3,13 +3,13 @@ use Cc4s;
 
 subtest {
 
-  my Algorithm $r = TensorReader :data<SomeTensor>
+  my Algorithm $r = TensorReader :Data<SomeTensor>
                                  :file<the-file.dat>
                                  ;
 
   ok $r.Str eq qq!
 TensorReader [
-  (data SomeTensor)
+  (Data SomeTensor)
   (file "the-file.dat")
 ] [
 
@@ -17,14 +17,14 @@ TensorReader [
 !
 , 'TensorReader without bin';
 
-  my Algorithm $e = TensorReader :data<SomeTensor>
+  my Algorithm $e = TensorReader :Data<SomeTensor>
                                  :file<the-file.dat>
                                  :bin
                                  ;
 
   ok $e.Str eq qq!
 TensorReader [
-  (data SomeTensor)
+  (Data SomeTensor)
   (file "the-file.dat")
   (mode "binary")
 ] [
