@@ -3,6 +3,11 @@ use v6;
 
 unit module Cc4s;
 
+enum PlaceHolder ( <_TENSOR_NAME_>
+                 , <_PATH_TO_VERTEX_FILE_>
+                 )
+                 ;
+
 subset Boolean   of Int  where * ∈ (0, 1);
 subset DataType  of Str  where * (elem) < RealTensor ComplexTensor >;
 subset StrInput  of List where (Str, Str);
@@ -44,12 +49,14 @@ variables. Optional and maybe also mandatory.
 subset CoulombIntegral of Str
   where * ∈ (([X~] $_ xx 4) X~ <CoulombIntegral> given < H P >);
 
-sub TensorIO ( Str :name($name)
-             , Str :Data($data)
-             , Str :file($file) = ""
-             , Bool :bin($bin) = False
-             , DataType :dtype($dtype) = <RealTensor>
-             ) of Algorithm {
+sub TensorIO
+  ( Str :name($name)
+  , Str :Data($data) = ~_TENSOR_NAME_
+  , Str :file($file) = ""
+  , Bool :bin($bin) = False
+  , DataType :dtype($dtype) = <RealTensor>
+  ) of Algorithm
+  {
   Algorithm.new:
     :name($name)
     :inputs( (<Data>, $data, $dtype)
@@ -67,17 +74,17 @@ our &ComplexTensorWriter is export
     = &TensorIO.assuming(:name<ComplexTensorWriter>,
                          :dtype<ComplexTensor>);
 
-our
-sub CoulombVertexReader( Str :file($file) = <VertexFileName>
-                       , Str :vertex($vertex) = <CoulombVertex>
-                       , Str :e-holes($h) = <HoleEigenEnergies>
-                       , Str :e-particles($p) = <ParticleEigenEnergies>
-                       ) is export {
+our sub CoulombVertexReader
+  ( Str :file($file) = ~_PATH_TO_VERTEX_FILE_
+  , Str :CoulombVertex($vertex) = <CoulombVertex>
+  , Str :HoleEigenEnergies($h) = <HoleEigenEnergies>
+  , Str :ParticleEigenEnergies($p) = <ParticleEigenEnergies>
+  ) is export
+  {
 
   Algorithm.new:
     :name<CoulombVertexReader>
-    :inputs( (<file>, $file),
-           )
+    :inputs( (<file>, $file), )
     :outputs( (<CoulombVertex>, $vertex, <RealTensor>)
             , (<HoleEigenEnergies>, $h, <RealTensor>)
             , (<ParticleEigenEnergies>, $p, <RealTensor>)
@@ -85,12 +92,13 @@ sub CoulombVertexReader( Str :file($file) = <VertexFileName>
 
 }
 
-our
-sub CoulombIntegralsFromVertex ( Str :vertex($v) = <CoulombVertex>
-                               , Str :e-holes($h) = <HoleEigenEnergies>
-                               , Str :e-particles($p) = <ParticleEigenEnergies>
-                               , *%ints
-                               ) is export {
+our sub CoulombIntegralsFromVertex
+  ( Str :CoulombVertex($v) = <CoulombVertex>
+  , Str :HoleEigenEnergies($h) = <HoleEigenEnergies>
+  , Str :ParticleEigenEnergies($p) = <ParticleEigenEnergies>
+  , *%ints
+  ) is export
+  {
   Algorithm.new:
     :name<CoulombIntegralsFromVertex>
     :inputs( (<CoulombVertex>, $v, <RealTensor>)
