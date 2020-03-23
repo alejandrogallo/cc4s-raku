@@ -118,18 +118,6 @@ our sub CoulombIntegralsFromVertex
                  )})
 }
 
-our sub mp2-integrals { :PPHHCoulombIntegral }
-our sub ccsd-integrals of Hash {
-  %(for $_ { $^a => True })
-    given Array[CoulombIntegral].new: < PHPH PPHH HHHH HHHP >
-                                   X~ <CoulombIntegral>
-}
-our sub ccsd-ref-integrals {
-  %(for $_ { $^a => True })
-    given Array[CoulombIntegral].new: < PHPH PPHH HHHH HHHP PPPP PPPH >
-                                   X~ <CoulombIntegral>
-}
-
 our sub Mp2EnergyFromCoulombIntegrals
   ( Str :PPHHCoulombIntegral($pphh) = <PPHHCoulombIntegral>
   , Str :e-holes($h) = <HoleEigenEnergies>
