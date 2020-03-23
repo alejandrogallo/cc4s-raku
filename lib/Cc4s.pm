@@ -151,6 +151,11 @@ our sub CcsdEnergyFromCoulombIntegrals
   , Str :vertex($vertex) = <CoulombVertex>
   , Str :e-holes($h) = <HoleEigenEnergies>
   , Str :e-particles($p) = <ParticleEigenEnergies>
+  , Str :initialDoublesAmplitudes($inittabij) = ""
+  , Str :initialSinglesAmplitudes($inittai) = ""
+  , Boolean :distinguishable($dist) = 0
+  , Boolean :PPL($ppl) = 0
+  , Int :integralsSliceSize($sliceSize) = 0
   , Str :energy($energy) = <CcsdEnergy>
   , Str :singles-amplitudes($tai) = ""
   , Str :doubles-amplitudes($tabij) = ""
@@ -165,6 +170,11 @@ our sub CcsdEnergyFromCoulombIntegrals
            , (<PHPHCoulombIntegral>, $phph, <RealTensor>)
            , (<HHHHCoulombIntegral>, $hhhh, <RealTensor>)
            , (<HHHPCoulombIntegral>, $hhhp, <RealTensor>)
+           , $inittabij ?? (<initialDoublesAmplitudes>, $inittabij, <RealTensor>) !! ()
+           , $inittai ?? (<initialSinglesAmplitudes>, $inittai, <RealTenor>) !! ()
+           , $dist ?? (<distinguishable>, $dist)  !! ()
+           , $ppl ?? (<PPL>, $ppl) !! ()
+           , $sliceSize ?? (<integralsSliceSize>, $sliceSize) !! ()
            )
     :outputs( (<CcsdEnergy>, $energy, <RealTensor>)
             , $tai ?? (<CcsdSinglesAmplitudes>, $tai, <RealTensor>) !! ()
