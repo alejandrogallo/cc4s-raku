@@ -7,7 +7,9 @@ test:
   - apt-get update -qy
   - apt-get install -y wget gzip
   - ./scripts/install-raku
-  - export PERL6LIB=$PWD/lib
+  #- export PERL6LIB=$PWD/lib
   - export PATH=$HOME/.raku/bin:$PATH
+  - export PATH=$HOME/.raku/share/perl6/site/bin/:$PATH
+  - zef install .
   - make test
 
