@@ -125,10 +125,10 @@ our sub CoulombIntegralsFromVertex
 
 our sub Mp2EnergyFromCoulombIntegrals
   ( Str :PPHHCoulombIntegral($pphh) = <PPHHCoulombIntegral>
-  , Str :e-holes($h) = <HoleEigenEnergies>
-  , Str :e-particles($p) = <ParticleEigenEnergies>
-  , Str :energy($energy) = <Mp2Energy>
-  , Str :amplitudes($amplitudes) = <Mp2DoublesAmplitudes>
+  , Str :HoleEigenEnergies($h) = <HoleEigenEnergies>
+  , Str :ParticleEigenEnergies($p) = <ParticleEigenEnergies>
+  , Str :Mp2Energy($energy) = <Mp2Energy>
+  , Str :Mp2DoublesAmplitudes($amplitudes) = <Mp2DoublesAmplitudes>
   ) is export {
 
   Algorithm.new:
@@ -148,17 +148,17 @@ our sub CcsdEnergyFromCoulombIntegrals
   , Str :PHPHCoulombIntegral($phph) = <PHPHCoulombIntegral>
   , Str :HHHHCoulombIntegral($hhhh) = <HHHHCoulombIntegral>
   , Str :HHHPCoulombIntegral($hhhp) = <HHHPCoulombIntegral>
-  , Str :vertex($vertex) = <CoulombVertex>
-  , Str :e-holes($h) = <HoleEigenEnergies>
-  , Str :e-particles($p) = <ParticleEigenEnergies>
-  , Str :initialDoublesAmplitudes($inittabij) = ""
-  , Str :initialSinglesAmplitudes($inittai) = ""
+  , Str :CoulombVertex($vertex) = <CoulombVertex>
+  , Str :HoleEigenEnergies($h) = <HoleEigenEnergies>
+  , Str :ParticleEigenEnergies($p) = <ParticleEigenEnergies>
+  , Str :initialDoublesAmplitudes($i-tabij) = ""
+  , Str :initialSinglesAmplitudes($i-tai) = ""
   , Boolean :distinguishable($dist) = 0
   , Boolean :PPL($ppl) = 0
   , Int :integralsSliceSize($sliceSize) = 0
-  , Str :energy($energy) = <CcsdEnergy>
-  , Str :singles-amplitudes($tai) = ""
-  , Str :doubles-amplitudes($tabij) = ""
+  , Str :CcsdEnergy($energy) = <CcsdEnergy>
+  , Str :CcsdSinglesAmplitudes($tai) = ""
+  , Str :CcsdDoublesAmplitudes($tabij) = ""
   ) is export {
 
   Algorithm.new:
@@ -170,8 +170,8 @@ our sub CcsdEnergyFromCoulombIntegrals
            , (<PHPHCoulombIntegral>, $phph, <RealTensor>)
            , (<HHHHCoulombIntegral>, $hhhh, <RealTensor>)
            , (<HHHPCoulombIntegral>, $hhhp, <RealTensor>)
-           , $inittabij ?? (<initialDoublesAmplitudes>, $inittabij, <RealTensor>) !! ()
-           , $inittai ?? (<initialSinglesAmplitudes>, $inittai, <RealTenor>) !! ()
+           , $i-tabij ?? (<initialDoublesAmplitudes>, $i-tabij, <RealTensor>) !! ()
+           , $i-tai ?? (<initialSinglesAmplitudes>, $i-tai, <RealTensor>) !! ()
            , $dist ?? (<distinguishable>, $dist)  !! ()
            , $ppl ?? (<PPL>, $ppl) !! ()
            , $sliceSize ?? (<integralsSliceSize>, $sliceSize) !! ()
