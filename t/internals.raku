@@ -1,6 +1,10 @@
 use Test;
 use Cc4s;
 
+
+
+
+
 ok * eq '(file "test.dat")', "Cc4s Input of strings"
   given to-string (<file>, <test.dat>);
 ok * eq '(someFlag 2)', "Cc4s Input of Integers"
@@ -14,10 +18,17 @@ ok * eq '(Data SomeTensor)', "Cc4s Input of Data of TensorReal"
 ok * eq '', "Cc4s No Input"
   given to-string ();
 
+subtest {
+  my Cc4s::CoulombIntegral @all-ints = ([X~] $_ xx 4) X~ <CoulombIntegral>
+                                        given < H P >;
+  ok +@all-ints eq 16, "Possible number of Coulomb Integrals";
+  ok @all-ints[0] eq <HHHHCoulombIntegral>, <HHHHCoulombIntegral>;
+  ok @all-ints[15] eq <PPPPCoulombIntegral>, <PPPPCoulombIntegral>;
 
-my Cc4s::CoulombIntegral @all-ints = ([X~] $_ xx 4) X~ <CoulombIntegral>
-                                      given < H P >;
-ok +@all-ints eq 16, "Possible number of Coulomb Integrals";
-ok @all-ints[0] eq <HHHHCoulombIntegral>, <HHHHCoulombIntegral>;
-ok @all-ints[15] eq <PPPPCoulombIntegral>, <PPPPCoulombIntegral>;
+  given [X~] (for 1..4 { < H P > }) {
+    ok < HPPH HHHH > (<=) $_ , 'Basic matching for hphp integrals with subset';
+  }
+  ok (Cc4s::mp2-integrals) eq :PPHHCoulombIntegral, <mp2 integrals>;
+  ok +$_ eq 4, 'There are 4 ccsd integrals' given Cc4s::ccsd-integrals;
 
+}, 'Integrals';

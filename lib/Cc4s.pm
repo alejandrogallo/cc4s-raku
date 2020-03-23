@@ -119,21 +119,18 @@ our sub CoulombIntegralsFromVertex
 }
 
 our sub mp2-integrals { :PPHHCoulombIntegral }
-
-our sub ccsd-integrals {
-  my CoulombIntegral @o = < PHPH PPHH HHHH HHHP > X~
-                          <CoulombIntegral>;
-  %(for @o { $_ => True })
+our sub ccsd-integrals of Hash {
+  %(for $_ { $^a => True })
+    given Array[CoulombIntegral].new: < PHPH PPHH HHHH HHHP >
+                                   X~ <CoulombIntegral>
 }
-
 our sub ccsd-ref-integrals {
-  my CoulombIntegral @o = < PHPH PPHH HHHH HHHP PPPP PPPH > X~
-                          <CoulombIntegral>;
-  %(for @o { $_ => True })
+  %(for $_ { $^a => True })
+    given Array[CoulombIntegral].new: < PHPH PPHH HHHH HHHP PPPP PPPH >
+                                   X~ <CoulombIntegral>
 }
 
-our
-sub Mp2EnergyFromCoulombIntegrals
+our sub Mp2EnergyFromCoulombIntegrals
   ( Str :PPHHCoulombIntegral($pphh) = <PPHHCoulombIntegral>
   , Str :e-holes($h) = <HoleEigenEnergies>
   , Str :e-particles($p) = <ParticleEigenEnergies>
@@ -153,8 +150,7 @@ sub Mp2EnergyFromCoulombIntegrals
 
 }
 
-our
-sub CcsdEnergyFromCoulombIntegrals
+our sub CcsdEnergyFromCoulombIntegrals
   ( Str :PPHHCoulombIntegral($pphh) = <PPHHCoulombIntegral>
   , Str :PHPHCoulombIntegral($phph) = <PHPHCoulombIntegral>
   , Str :HHHHCoulombIntegral($hhhh) = <HHHHCoulombIntegral>
