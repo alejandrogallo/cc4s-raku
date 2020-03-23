@@ -28,7 +28,5 @@ subtest {
   given [X~] (for 1..4 { < H P > }) {
     ok < HPPH HHHH > (<=) $_ , 'Basic matching for hphp integrals with subset';
   }
-  ok (Cc4s::mp2-integrals) eq :PPHHCoulombIntegral, <mp2 integrals>;
-  ok +$_ eq 4, 'There are 4 ccsd integrals' given Cc4s::ccsd-integrals;
 
 }, 'Integrals';
