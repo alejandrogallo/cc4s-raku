@@ -5,6 +5,8 @@ unit module Cc4s;
 
 enum PlaceHolder ( <_TENSOR_NAME_>
                  , <_PATH_TO_VERTEX_FILE_>
+                 , <_PATH_TO_XYZ_FILE_>
+                 , <_BASIS_SET_>
                  )
                  ;
 
@@ -95,6 +97,17 @@ our sub CoulombVertexReader
             , (<ParticleEigenEnergies>, $p, <RealTensor>)
             )
 
+}
+
+# Convert a hash of { :PPHHCoulombIntegrals, :WHATEVER }
+# into a list of DataInput of CoulombIntegrals ready to be fed into a cc4s algo
+sub cints-hash-to-input-list (%ints) of Array[DataInput] {
+  Array[DataInput].new: (
+     ( .keys[0]
+     , (.values[0] eq True) ?? .keys[0] !! .values[0]
+     , <RealTensor>
+     ) for (%ints ==> grep {.keys[0] ~~ CoulombIntegral})
+   )
 }
 
 our sub CoulombIntegralsFromVertex
