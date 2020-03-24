@@ -123,17 +123,7 @@ our sub CoulombIntegralsFromVertex
            , (<HoleEigenEnergies>, $h, <RealTensor>)
            , (<ParticleEigenEnergies>, $p, <RealTensor>)
            )
-    :outputs(for
-                 # get only things with keys being a CoulombIntegral
-                 (%ints ==> grep {$_.keys[0] ~~ CoulombIntegral})
-                 # name of the integral
-                 {( $_.keys[0]
-                 # name of the user integral, if non given, the name of
-                 # the integral is given
-                 , ($_.values[0] eq True) ?? $_.keys[0] !! $_.values[0]
-                 # datat type
-                 , <RealTensor>
-                 )})
+    :outputs(cints-hash-to-input-list %ints)
 }
 
 our sub Mp2EnergyFromCoulombIntegrals
@@ -194,4 +184,96 @@ our sub CcsdEnergyFromCoulombIntegrals
             , $tabij ?? (<CcsdDoublesAmplitudes>, $tabij, <RealTensor>) !! ()
             )
 
+}
+
+our sub CoulombIntegralsFromGaussian
+  ( Str :xyzStructureFile($structure) = ~_PATH_TO_XYZ_FILE_
+  , Str :basisSet($basis) = ~_BASIS_SET_
+  , Str :CoulombIntegrals($cs) = <CoulombIntegrals>
+  , Str :kernel($kernel) where * ∈ < coulomb delta > = <coulomb>
+  , Boolean :chemistNotation($c-n) = 1
+  ) of Algorithm is export
+  {
+
+  Algorithm.new:
+    :name<CoulombIntegralsFromGaussian>
+    :inputs( (<xyzStructureFile>, $structure)
+           , (<basisSet>, $basis)
+           , (<kernel>, $kernel)
+           , (<chemistNotation>, $c-n)
+           )
+    :outputs( (<CoulombIntegrals>, $cs, <RealTensor>), )
+
+}
+
+sub HartreeFockFromGaussian
+  ( Str :xyzStructureFile($structure) = ~_PATH_TO_XYZ_FILE_
+  , Str :basisSet($basis) = ~_BASIS_SET_
+  , Real :energyDifference($ediff) = 1e-6
+  , Int :numberOfElectrons($nelec) where * > -2 = -1
+  , Int :maxIterations($max-iter) = 50
+  # outputs
+  , Str :CoreHamiltonian($core) = ""
+  , Str :HartreeFockEnergy($energy) = <HartreeFockEnergy>
+  , Str :HoleEigenEnergies($h) = <HoleEigenEnergies>
+  , Str :OrbitalCoefficients($coeffs) = <OrbitalCoefficients>
+  , Str :OverlapMatrix($overlap) = ""
+  , Str :ParticleEigenEnergies($p) = <ParticleEigenEnergies>
+
+  ) of Algorithm is export
+  {
+
+  Algorithm.new:
+    :name<HartreeFockFromGaussian>
+    :inputs( (<xyzStructureFile>, $structure)
+           , (<basisSet>, $basis)
+           , (<maxIterations>, $max-iter)
+           , (<energyDifference>, $ediff)
+           , $nelec eq -1 ?? () !! (<numberOfElectrons>, $nelec)
+           )
+    :output( $core ?? (<CoreHamiltonian>, $core, <RealTensor>) !! ()
+           , $coeffs ?? (<OrbitalCoefficients>, $core, <RealTensor>) !! ()
+           , $overlap ?? (<OverlapMatrix>, $core, <RealTensor>) !! ()
+           , $energy ?? (<HartreeFockEnergy>, $core, <RealTensor>) !! ()
+           , $h ?? (<HoleEigenEnergies>, $core, <RealTensor>) !! ()
+           , $p ?? (<ParticleEigenEnergies>, $core, <RealTensor>) !! ()
+           )
+
+}
+
+sub MeanCorrelationHoleDepth
+  ( Str :$DoublesAmplitudes = <DoublesAmplitudes>
+  , Str :$PPHHDelta = <PPHHDelta>
+  , Str :$G = <G>
+  ) of Algorithm is export
+  {
+
+  Algorithm.new:
+    :name<MeanCorrelationHoleDepth>
+    :inputs( (<DoublesAmplitudes>, $DoublesAmplitudes, <RealTensor>)
+           , (<PPHHDelta>, $PPHHDelta, <RealTensor>)
+           )
+    :outputs( (<G>, $G, <RealTensor>), )
+
+}
+
+
+sub CoulombIntegralsFromRotatedCoulombIntegrals
+  ( Str :$OrbitalCoefficients = <OrbitalCoefficients>
+  , Str :$CoulombIntegrals = <CoulombIntegrals>
+  , Int :$nelec where * > -2 = -1
+  , Int :$No = $nelec div 2
+  , Boolean :chemistNotation($cn) = 1
+  , *%ints
+  ) of Algorithm is export
+  {
+  Algorithm.new:
+    :name<CoulombIntegralsFromRotatedCoulombIntegrals>
+    :inputs( (<OrbitalCoefficients>, $OrbitalCoefficients, <RealTensor>)
+           , (<CoulombIntegrals>, $CoulombIntegrals, <RealTensor>)
+           , $nelec eq -1 ?? () !! (<nelec>, $nelec)
+           , $nelec eq -1 ?? (<No>, $No) !! ()
+           , $cn eq 1 ?? () !! (<chemistNotation>, $cn)
+           )
+    :outputs(cints-hash-to-input-list %ints)
 }
