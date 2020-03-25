@@ -54,7 +54,7 @@ variables. Optional and maybe also mandatory.
 }
 
 subset CoulombIntegral of Str
-  where * ∈ (([X~] $_ xx 4) X~ <CoulombIntegral> given < H P >);
+  where * ∈ (([X~] $_ xx 4) X~ <CoulombIntegrals> given < H P >);
 
 sub TensorIO
   ( Str :name($name)
@@ -127,7 +127,7 @@ our sub CoulombIntegralsFromVertex
 }
 
 our sub Mp2EnergyFromCoulombIntegrals
-  ( Str :PPHHCoulombIntegral($pphh) = <PPHHCoulombIntegral>
+  ( Str :PPHHCoulombIntegrals($pphh) = <PPHHCoulombIntegrals>
   , Str :HoleEigenEnergies($h) = <HoleEigenEnergies>
   , Str :ParticleEigenEnergies($p) = <ParticleEigenEnergies>
   , Str :Mp2Energy($energy) = <Mp2Energy>
@@ -138,7 +138,7 @@ our sub Mp2EnergyFromCoulombIntegrals
     :name<Mp2EnergyFromCoulombIntegrals>
     :inputs( (<HoleEigenEnergies>, $h, <RealTensor>)
            , (<ParticleEigenEnergies>, $p, <RealTensor>)
-           , (<PPHHCoulombIntegral>, $pphh, <RealTensor>)
+           , (<PPHHCoulombIntegrals>, $pphh, <RealTensor>)
            )
     :outputs( (<Mp2Energy>, $energy, <RealTensor>)
             , (<Mp2DoublesAmplitudes>, $amplitudes, <RealTensor>)
@@ -147,10 +147,10 @@ our sub Mp2EnergyFromCoulombIntegrals
 }
 
 our sub CcsdEnergyFromCoulombIntegrals
-  ( Str :PPHHCoulombIntegral($pphh) = <PPHHCoulombIntegral>
-  , Str :PHPHCoulombIntegral($phph) = <PHPHCoulombIntegral>
-  , Str :HHHHCoulombIntegral($hhhh) = <HHHHCoulombIntegral>
-  , Str :HHHPCoulombIntegral($hhhp) = <HHHPCoulombIntegral>
+  ( Str :PPHHCoulombIntegrals($pphh) = <PPHHCoulombIntegrals>
+  , Str :PHPHCoulombIntegrals($phph) = <PHPHCoulombIntegrals>
+  , Str :HHHHCoulombIntegrals($hhhh) = <HHHHCoulombIntegrals>
+  , Str :HHHPCoulombIntegrals($hhhp) = <HHHPCoulombIntegrals>
   , Str :CoulombVertex($vertex) = <CoulombVertex>
   , Str :HoleEigenEnergies($h) = <HoleEigenEnergies>
   , Str :ParticleEigenEnergies($p) = <ParticleEigenEnergies>
@@ -169,10 +169,10 @@ our sub CcsdEnergyFromCoulombIntegrals
     :inputs( (<CoulombVertex>, $vertex, <RealTensor>)
            , (<HoleEigenEnergies>, $h, <RealTensor>)
            , (<ParticleEigenEnergies>, $p, <RealTensor>)
-           , (<PPHHCoulombIntegral>, $pphh, <RealTensor>)
-           , (<PHPHCoulombIntegral>, $phph, <RealTensor>)
-           , (<HHHHCoulombIntegral>, $hhhh, <RealTensor>)
-           , (<HHHPCoulombIntegral>, $hhhp, <RealTensor>)
+           , (<PPHHCoulombIntegrals>, $pphh, <RealTensor>)
+           , (<PHPHCoulombIntegrals>, $phph, <RealTensor>)
+           , (<HHHHCoulombIntegrals>, $hhhh, <RealTensor>)
+           , (<HHHPCoulombIntegrals>, $hhhp, <RealTensor>)
            , $i-tabij ?? (<initialDoublesAmplitudes>, $i-tabij, <RealTensor>) !! ()
            , $i-tai ?? (<initialSinglesAmplitudes>, $i-tai, <RealTensor>) !! ()
            , $dist ?? (<distinguishable>, $dist)  !! ()

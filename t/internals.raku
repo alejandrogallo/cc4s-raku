@@ -19,11 +19,11 @@ ok * eq '', "Cc4s No Input"
   given to-string ();
 
 subtest {
-  my Cc4s::CoulombIntegral @all-ints = ([X~] $_ xx 4) X~ <CoulombIntegral>
+  my Cc4s::CoulombIntegral @all-ints = ([X~] $_ xx 4) X~ <CoulombIntegrals>
                                         given < H P >;
   ok +@all-ints eq 16, "Possible number of Coulomb Integrals";
-  ok @all-ints[0] eq <HHHHCoulombIntegral>, <HHHHCoulombIntegral>;
-  ok @all-ints[15] eq <PPPPCoulombIntegral>, <PPPPCoulombIntegral>;
+  ok @all-ints[0] eq <HHHHCoulombIntegrals>, <HHHHCoulombIntegrals>;
+  ok @all-ints[15] eq <PPPPCoulombIntegrals>, <PPPPCoulombIntegrals>;
 
   given [X~] (for 1..4 { < H P > }) {
     ok < HPPH HHHH > (<=) $_ , 'Basic matching for hphp integrals with subset';

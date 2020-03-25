@@ -17,9 +17,9 @@ CoulombIntegralsFromVertex [
   HoleEigenEnergies
   ParticleEigenEnergies
 ] [
-  HHHHCoulombIntegral
+  HHHHCoulombIntegrals
 ].
-!, 'With hhhh' given CoulombIntegralsFromVertex :HHHHCoulombIntegral;
+!, 'With hhhh' given CoulombIntegralsFromVertex :HHHHCoulombIntegrals;
 
 ok ~$_ ~~ q!
 CoulombIntegralsFromVertex [
@@ -27,9 +27,9 @@ CoulombIntegralsFromVertex [
   HoleEigenEnergies
   ParticleEigenEnergies
 ] [
-  PPPPCoulombIntegral
+  PPPPCoulombIntegrals
 ].
 !, 'With pppp and CoulombVertex'
 given CoulombIntegralsFromVertex :CoulombVertex<SomeOther>
-                                 :PPPPCoulombIntegral
+                                 :PPPPCoulombIntegrals
                                  ;
