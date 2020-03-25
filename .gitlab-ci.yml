@@ -18,5 +18,5 @@ test:
 pages:
   script:
   - mkdir -p public
-  - zef install Pod::To::HTML
-  - raku --doc=HTML lib/Cc4s.pm -o public/index.html
+  #- zef install Pod::To::HTML
+  - raku --doc=HTML lib/Cc4s.pm > public/index.html
