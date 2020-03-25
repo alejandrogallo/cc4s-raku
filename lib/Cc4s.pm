@@ -159,6 +159,12 @@ our sub CcsdEnergyFromCoulombIntegrals
   , Boolean :distinguishable($dist) = 0
   , Boolean :PPL($ppl) = 0
   , Int :integralsSliceSize($sliceSize) = 0
+  , Str :mixer($mixer) = ""
+  , Real :mixingRatio($mixRat) = -1
+  , Int :MaxResidua($maxRes) = 0
+  , Int :maxIterations($maxIter) = 0
+  , Real :amplitudesConvergence($ampConv) = -1
+  , Real :energyConvergence($enConv) = -1
   , Str :CcsdEnergy($energy) = <CcsdEnergy>
   , Str :CcsdSinglesAmplitudes($tai) = ""
   , Str :CcsdDoublesAmplitudes($tabij) = ""
@@ -178,6 +184,12 @@ our sub CcsdEnergyFromCoulombIntegrals
            , $dist ?? (<distinguishable>, $dist)  !! ()
            , $ppl ?? (<PPL>, $ppl) !! ()
            , $sliceSize ?? (<integralsSliceSize>, $sliceSize) !! ()
+           , $mixer ?? (<Mixer>, $mixer) !! ()
+           , ($mixRat > 0) ?? (<mixingRatio>, $mixRat) !! ()
+           , $maxRes ?? (<MaxResidua>, $maxRes) !! ()
+           , $maxIter ?? (<maxIterations>, $maxIter) !! ()
+           , ($ampConv > 0) ?? (<amplitudesConvergence> , $ampConv) !! ()
+           , ($enConv > 0) ?? (<energyConvergence> , $enConv) !! ()
            )
     :outputs( (<CcsdEnergy>, $energy, <RealTensor>)
             , $tai ?? (<CcsdSinglesAmplitudes>, $tai, <RealTensor>) !! ()
@@ -198,6 +210,12 @@ our sub CcsdEnergyFromCoulombIntegralsReference
   , Str :initialDoublesAmplitudes($i-tabij) = ""
   , Str :initialSinglesAmplitudes($i-tai) = ""
   , Boolean :OnlyPPL($ppl) = 0
+  , Str :mixer($mixer) = ""
+  , Real :mixingRatio($mixRat) = -1
+  , Int :MaxResidua($maxRes) = 0
+  , Int :maxIterations($maxIter) = 0
+  , Real :amplitudesConvergence($ampConv) = -1
+  , Real :energyConvergence($enConv) = -1
   , Str :CcsdEnergy($energy) = <CcsdEnergy>
   , Str :CcsdSinglesAmplitudes($tai) = ""
   , Str :CcsdDoublesAmplitudes($tabij) = ""
@@ -216,6 +234,13 @@ our sub CcsdEnergyFromCoulombIntegralsReference
            , $i-tabij ?? (<initialDoublesAmplitudes>, $i-tabij, <RealTensor>) !! ()
            , $i-tai ?? (<initialSinglesAmplitudes>, $i-tai, <RealTensor>) !! ()
            , $ppl ?? (<OnlyPPL>, $ppl) !! ()
+           , $mixer ?? (<Mixer>, $mixer) !! ()
+           , ($mixRat > 0) ?? (<mixingRatio>, $mixRat) !! ()
+           , $maxRes ?? (<MaxResidua>, $maxRes) !! ()
+           , $maxIter ?? (<maxIterations>, $maxIter) !! ()
+           , ($ampConv > 0) ?? (<amplitudesConvergence> , $ampConv) !! ()
+           , ($enConv > 0) ?? (<energyConvergence> , $enConv) !! ()
+
            )
     :outputs( (<CcsdEnergy>, $energy, <RealTensor>)
             , $tai ?? (<CcsdSinglesAmplitudes>, $tai, <RealTensor>) !! ()
