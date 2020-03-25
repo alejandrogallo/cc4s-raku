@@ -16,7 +16,11 @@ test:
   - make test
 
 pages:
+  stage: deploy
   script:
   - mkdir -p public
   - zef install Pod::To::HTML
   - raku --doc=HTML lib/Cc4s.pm > public/index.html
+  artifacts:
+    paths:
+    - public
