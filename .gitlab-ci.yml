@@ -1,9 +1,7 @@
 stages:
   - test
 
-test:
-  stage: test
-  script:
+before_script:
   - apt-get update -qy
   - apt-get install -y wget gzip
   - ./scripts/install-raku
@@ -11,5 +9,14 @@ test:
   - export PATH=$HOME/.raku/bin:$PATH
   - export PATH=$HOME/.raku/share/perl6/site/bin/:$PATH
   - zef install .
+
+test:
+  stage: test
+  script:
   - make test
 
+pages:
+  script:
+  - mkdir -p public
+  - zef install Pod::To::HTML
+  - raku --doc=HTML lib/Cc4s.pm -o public/index.html

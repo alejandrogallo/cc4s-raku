@@ -10,6 +10,7 @@ enum PlaceHolder ( <_TENSOR_NAME_>
                  )
                  ;
 
+#| A cc4s boolean type, either 0 or 1
 subset Boolean   of Int  where * ∈ (0, 1);
 subset DataType  of Str  where * (elem) < RealTensor ComplexTensor >;
 subset StrInput  of List where (Str, Str);
@@ -59,6 +60,7 @@ variables. Optional and maybe also mandatory.
 subset CoulombIntegral of Str
   where * ∈ (([X~] $_ xx 4) X~ <CoulombIntegrals> given < H P >);
 
+#| Template function for most tensor input/output functions in cc4s
 sub TensorIO
   ( Str :name($name)
   , Str :Data($data) = ~_TENSOR_NAME_
@@ -84,6 +86,7 @@ our &ComplexTensorWriter is export
     = &TensorIO.assuming(:name<ComplexTensorWriter>,
                          :dtype<ComplexTensor>);
 
+#| CoulombVertexReader
 our sub CoulombVertexReader
   ( Str :file($file) = ~_PATH_TO_VERTEX_FILE_
   , Str :CoulombVertex($vertex) = <CoulombVertex>
@@ -113,10 +116,12 @@ sub cints-hash-to-input-list (%ints) of Array[DataInput] {
    )
 }
 
+#| CoulombIntegralsFromVertex
 our sub CoulombIntegralsFromVertex
   ( Str :CoulombVertex($v) = <CoulombVertex>
   , Str :HoleEigenEnergies($h) = <HoleEigenEnergies>
   , Str :ParticleEigenEnergies($p) = <ParticleEigenEnergies>
+  #| This should be any combination of :HHHHCoulombIntegrals, ...
   , *%ints
   ) is export
   {
@@ -129,6 +134,7 @@ our sub CoulombIntegralsFromVertex
     :outputs(cints-hash-to-input-list %ints)
 }
 
+#| Mp2EnergyFromCoulombIntegrals
 our sub Mp2EnergyFromCoulombIntegrals
   ( Str :PPHHCoulombIntegrals($pphh) = <PPHHCoulombIntegrals>
   , Str :HoleEigenEnergies($h) = <HoleEigenEnergies>
@@ -149,6 +155,7 @@ our sub Mp2EnergyFromCoulombIntegrals
 
 }
 
+#| CcsdEnergyFromCoulombIntegrals
 our sub CcsdEnergyFromCoulombIntegrals
   ( Str :PPHHCoulombIntegrals($pphh) = <PPHHCoulombIntegrals>
   , Str :PHPHCoulombIntegrals($phph) = <PHPHCoulombIntegrals>
@@ -201,6 +208,7 @@ our sub CcsdEnergyFromCoulombIntegrals
 
 }
 
+#| CcsdEnergyFromCoulombIntegralsReference
 our sub CcsdEnergyFromCoulombIntegralsReference
   ( Str :PPHHCoulombIntegral($pphh) = <PPHHCoulombIntegral>
   , Str :PHPHCoulombIntegral($phph) = <PHPHCoulombIntegral>
@@ -252,6 +260,7 @@ our sub CcsdEnergyFromCoulombIntegralsReference
 
 }
 
+#| CoulombIntegralsFromGaussian
 our sub CoulombIntegralsFromGaussian
   ( Str :xyzStructureFile($structure) = ~_PATH_TO_XYZ_FILE_
   , Str :basisSet($basis) = ~_BASIS_SET_
@@ -272,6 +281,7 @@ our sub CoulombIntegralsFromGaussian
 
 }
 
+#| HartreeFockFromGaussian
 sub HartreeFockFromGaussian
   ( Str :xyzStructureFile($structure) = ~_PATH_TO_XYZ_FILE_
   , Str :basisSet($basis) = ~_BASIS_SET_
@@ -307,6 +317,7 @@ sub HartreeFockFromGaussian
 
 }
 
+#| MeanCorrelationHoleDepth
 sub MeanCorrelationHoleDepth
   ( Str :$DoublesAmplitudes = <DoublesAmplitudes>
   , Str :$PPHHDelta = <PPHHDelta>
@@ -324,6 +335,7 @@ sub MeanCorrelationHoleDepth
 }
 
 
+#| CoulombIntegralsFromRotatedCoulombIntegrals
 sub CoulombIntegralsFromRotatedCoulombIntegrals
   ( Str :$OrbitalCoefficients = <OrbitalCoefficients>
   , Str :$CoulombIntegrals = <CoulombIntegrals>

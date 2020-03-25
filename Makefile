@@ -1,7 +1,7 @@
 install:
 	zef install .
 
-install-force:
+force-install:
 	zef install --force-install .
 
 test:
