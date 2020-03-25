@@ -308,11 +308,11 @@ sub HartreeFockFromGaussian
            , $nelec eq -1 ?? () !! (<numberOfElectrons>, $nelec)
            )
     :outputs( $core ?? (<CoreHamiltonian>, $core, <RealTensor>) !! ()
-            , $coeffs ?? (<OrbitalCoefficients>, $core, <RealTensor>) !! ()
-            , $overlap ?? (<OverlapMatrix>, $core, <RealTensor>) !! ()
-            , $energy ?? (<HartreeFockEnergy>, $core, <RealTensor>) !! ()
-            , $h ?? (<HoleEigenEnergies>, $core, <RealTensor>) !! ()
-            , $p ?? (<ParticleEigenEnergies>, $core, <RealTensor>) !! ()
+            , $coeffs ?? (<OrbitalCoefficients>, $coeffs, <RealTensor>) !! ()
+            , $overlap ?? (<OverlapMatrix>, $overlap, <RealTensor>) !! ()
+            , $energy ?? (<HartreeFockEnergy>, $energy, <RealTensor>) !! ()
+            , $h ?? (<HoleEigenEnergies>, $h, <RealTensor>) !! ()
+            , $p ?? (<ParticleEigenEnergies>, $p, <RealTensor>) !! ()
             )
 
 }
