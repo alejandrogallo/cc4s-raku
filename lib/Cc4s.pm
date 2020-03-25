@@ -186,6 +186,44 @@ our sub CcsdEnergyFromCoulombIntegrals
 
 }
 
+our sub CcsdEnergyFromCoulombIntegralsReference
+  ( Str :PPHHCoulombIntegral($pphh) = <PPHHCoulombIntegral>
+  , Str :PHPHCoulombIntegral($phph) = <PHPHCoulombIntegral>
+  , Str :HHHHCoulombIntegral($hhhh) = <HHHHCoulombIntegral>
+  , Str :HHHPCoulombIntegral($hhhp) = <HHHPCoulombIntegral>
+  , Str :PPPHCoulombIntegral($ppph) = <PPPHCoulombIntegral>
+  , Str :PPPPCoulombIntegral($pppp) = <PPPPCoulombIntegral>
+  , Str :HoleEigenEnergies($h) = <HoleEigenEnergies>
+  , Str :ParticleEigenEnergies($p) = <ParticleEigenEnergies>
+  , Str :initialDoublesAmplitudes($i-tabij) = ""
+  , Str :initialSinglesAmplitudes($i-tai) = ""
+  , Boolean :OnlyPPL($ppl) = 0
+  , Str :CcsdEnergy($energy) = <CcsdEnergy>
+  , Str :CcsdSinglesAmplitudes($tai) = ""
+  , Str :CcsdDoublesAmplitudes($tabij) = ""
+  ) is export {
+
+  Algorithm.new:
+    :name<CcsdEnergyFromCoulombIntegrals>
+    :inputs( (<HoleEigenEnergies>, $h, <RealTensor>)
+           , (<ParticleEigenEnergies>, $p, <RealTensor>)
+           , (<PPHHCoulombIntegral>, $pphh, <RealTensor>)
+           , (<PHPHCoulombIntegral>, $phph, <RealTensor>)
+           , (<HHHHCoulombIntegral>, $hhhh, <RealTensor>)
+           , (<HHHPCoulombIntegral>, $hhhp, <RealTensor>)
+           , (<PPPHCoulombIntegral>, $ppph, <RealTensor>)
+           , (<PPPPCoulombIntegral>, $pppp, <RealTensor>)
+           , $i-tabij ?? (<initialDoublesAmplitudes>, $i-tabij, <RealTensor>) !! ()
+           , $i-tai ?? (<initialSinglesAmplitudes>, $i-tai, <RealTensor>) !! ()
+           , $ppl ?? (<OnlyPPL>, $ppl) !! ()
+           )
+    :outputs( (<CcsdEnergy>, $energy, <RealTensor>)
+            , $tai ?? (<CcsdSinglesAmplitudes>, $tai, <RealTensor>) !! ()
+            , $tabij ?? (<CcsdDoublesAmplitudes>, $tabij, <RealTensor>) !! ()
+            )
+
+}
+
 our sub CoulombIntegralsFromGaussian
   ( Str :xyzStructureFile($structure) = ~_PATH_TO_XYZ_FILE_
   , Str :basisSet($basis) = ~_BASIS_SET_
