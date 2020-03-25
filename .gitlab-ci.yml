@@ -16,8 +16,7 @@ test:
   - make test
 
 pages:
-  before_script:
+  script:
   - mkdir -p public
   - zef install Pod::To::HTML
-  script:
   - raku --doc=HTML lib/Cc4s.pm > public/index.html
