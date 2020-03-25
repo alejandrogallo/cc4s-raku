@@ -17,7 +17,7 @@ subset StrInput  of List where (Str, Str);
 subset DataInput of List where (Str, Str, DataType);
 subset IntInput  of List where (Str, Int);
 subset BoolInput of List where (Str, Boolean);
-subset RealInput of List where (Str, Real);
+subset RealInput of List where (Str, Num) | (Str, Rat);
 subset NoInput   of List where ();
 subset Input     of List where StrInput  | DataInput | IntInput
                              | RealInput | BoolInput | NoInput
@@ -25,10 +25,13 @@ subset Input     of List where StrInput  | DataInput | IntInput
 
 multi sub to-string(NoInput $a) of Str is export {""}
 multi sub to-string(StrInput $a) of Str is export {qq!({$a.head} "{$a.tail}")!}
-multi sub to-string(DataInput $a) of Str is export {
-  ($a.head ~~ $a[1]) ?? $a.head !! qq!({$a.head} {$a[1]})!
+multi sub to-string(RealInput $a) of Str is export {
+  "({$a.head} {$a.tail.fmt: "%.20f"})"
 }
-multi sub to-string(Input $a) of Str is export {qq!($a)!}
+multi sub to-string(DataInput $a) of Str is export {
+  ($a.head ~~ $a[1]) ?? $a.head !! "({$a.head} {$a[1]})"
+}
+multi sub to-string(Input $a) of Str is export {"($a)"}
 
 class Algorithm is export {
   has Str $.name;

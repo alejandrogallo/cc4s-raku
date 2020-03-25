@@ -5,17 +5,17 @@ use Cc4s;
 
 
 
-ok * eq '(file "test.dat")', "Cc4s Input of strings"
+ok $_ eq '(file "test.dat")', "Cc4s Input of strings: $_"
   given to-string (<file>, <test.dat>);
-ok * eq '(someFlag 2)', "Cc4s Input of Integers"
-  given to-string (<someFlag>, 2);
-ok * eq '(someFlag 2.2)', "Cc4s Input of Real"
-  given to-string (<someFlag>, 2.2);
-ok * eq '(some-flag 0)', "Cc4s Input of Booleans"
+ok $_ eq '(IntFlag 2)', "Cc4s Input of Integers: $_"
+  given to-string (<IntFlag>, Int.new: 2);
+ok $_ eq '(RFlag 2.20000000000000000000)', "Cc4s Input of Real: $_"
+  given to-string (<RFlag>, 2.2);
+ok $_ eq '(some-flag 0)', "Cc4s Input of Booleans: $_"
   given to-string (<some-flag>, 0);
-ok * eq '(Data SomeTensor)', "Cc4s Input of Data of TensorReal"
+ok $_ eq '(Data SomeTensor)', "Cc4s Input of Data of TensorReal: $_"
   given to-string (<Data>, <SomeTensor>, <RealTensor>);
-ok * eq '', "Cc4s No Input"
+ok $_ eq '', "Cc4s No Input"
   given to-string ();
 
 subtest {

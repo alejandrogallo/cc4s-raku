@@ -42,7 +42,7 @@ TensorReader [
   (mode "binary")
   (slice 23)
 ] [
-  (slicing 2.23)
+  (slicing 2.23000000000000000000)
 ].
 !, "TensorReader with extra inputs and outputs"
 given (TensorReader :Data<SomeTensor>
