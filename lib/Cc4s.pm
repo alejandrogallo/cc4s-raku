@@ -355,3 +355,27 @@ sub CoulombIntegralsFromRotatedCoulombIntegrals
            )
     :outputs(cints-hash-to-input-list %ints)
 }
+
+
+#| FiniteSizeCorrection
+our sub FiniteSizeCorrection
+  ( Str :CoulombVertex($vertex) = <CoulombVertex>
+  , Str :CoulombKernel($kernel) = <CoulombKernel>
+  , Str :HoleEigenEnergies($h) = <HoleEigenEnergies>
+  , Str :ParticleEigenEnergies($p) = <ParticleEigenEnergies>
+  , Str :SinglesAmplitudes($tai) = ~_TENSOR_NAME_
+  , Str :DoublesAmplitudes($tabij) = ~_TENSOR_NAME_
+  , Str :StructureFactor($sofg) = <StructureFactor>
+  ) of Algorithm is export
+  {
+  Algorithm.new:
+    :name<FiniteSizeCorrection>
+    :inputs( (<HoleEigenEnergies>, $h, <RealTensor>)
+           , (<ParticleEigenEnergies>, $p, <RealTensor>)
+           , (<CoulombVertex>, $vertex, <RealTensor>)
+           , (<CoulombKernel>, $kernel, <RealTensor>)
+           , (<SinglesAmplitudes>, $tai, <RealTensor>)
+           , (<DoublesAmplitudes>, $tabij, <RealTensor>)
+           )
+    :outputs( (<StructureFactor>, $sofg, <RealTensor>), )
+}
