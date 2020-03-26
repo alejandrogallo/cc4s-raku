@@ -96,7 +96,7 @@ our sub CoulombVertexReader
   {
 
   Algorithm.new:
-    :name<CoulombVertexReader>
+    :name(&?ROUTINE.name)
     :inputs( (<file>, $file), )
     :outputs( (<CoulombVertex>, $vertex, <RealTensor>)
             , (<HoleEigenEnergies>, $h, <RealTensor>)
@@ -126,7 +126,7 @@ our sub CoulombIntegralsFromVertex
   ) is export
   {
   Algorithm.new:
-    :name<CoulombIntegralsFromVertex>
+    :name(&?ROUTINE.name)
     :inputs( (<CoulombVertex>, $v, <RealTensor>)
            , (<HoleEigenEnergies>, $h, <RealTensor>)
            , (<ParticleEigenEnergies>, $p, <RealTensor>)
@@ -144,7 +144,7 @@ our sub Mp2EnergyFromCoulombIntegrals
   ) is export {
 
   Algorithm.new:
-    :name<Mp2EnergyFromCoulombIntegrals>
+    :name(&?ROUTINE.name)
     :inputs( (<HoleEigenEnergies>, $h, <RealTensor>)
            , (<ParticleEigenEnergies>, $p, <RealTensor>)
            , (<PPHHCoulombIntegrals>, $pphh, <RealTensor>)
@@ -181,7 +181,7 @@ our sub CcsdEnergyFromCoulombIntegrals
   ) is export {
 
   Algorithm.new:
-    :name<CcsdEnergyFromCoulombIntegrals>
+    :name(&?ROUTINE.name)
     :inputs( (<CoulombVertex>, $vertex, <RealTensor>)
            , (<HoleEigenEnergies>, $h, <RealTensor>)
            , (<ParticleEigenEnergies>, $p, <RealTensor>)
@@ -233,7 +233,7 @@ our sub CcsdEnergyFromCoulombIntegralsReference
   ) is export {
 
   Algorithm.new:
-    :name<CcsdEnergyFromCoulombIntegralsReference>
+    :name(&?ROUTINE.name)
     :inputs( (<HoleEigenEnergies>, $h, <RealTensor>)
            , (<ParticleEigenEnergies>, $p, <RealTensor>)
            , (<PPHHCoulombIntegrals>, $pphh, <RealTensor>)
@@ -271,7 +271,7 @@ our sub CoulombIntegralsFromGaussian
   {
 
   Algorithm.new:
-    :name<CoulombIntegralsFromGaussian>
+    :name(&?ROUTINE.name)
     :inputs( (<xyzStructureFile>, $structure)
            , (<basisSet>, $basis)
            , (<kernel>, $kernel)
@@ -300,7 +300,7 @@ sub HartreeFockFromGaussian
   {
 
   Algorithm.new:
-    :name<HartreeFockFromGaussian>
+    :name(&?ROUTINE.name)
     :inputs( (<xyzStructureFile>, $structure)
            , (<basisSet>, $basis)
            , (<maxIterations>, $max-iter)
@@ -326,7 +326,7 @@ sub MeanCorrelationHoleDepth
   {
 
   Algorithm.new:
-    :name<MeanCorrelationHoleDepth>
+    :name(&?ROUTINE.name)
     :inputs( (<DoublesAmplitudes>, $DoublesAmplitudes, <RealTensor>)
            , (<PPHHDelta>, $PPHHDelta, <RealTensor>)
            )
@@ -346,7 +346,7 @@ sub CoulombIntegralsFromRotatedCoulombIntegrals
   ) of Algorithm is export
   {
   Algorithm.new:
-    :name<CoulombIntegralsFromRotatedCoulombIntegrals>
+    :name(&?ROUTINE.name)
     :inputs( (<OrbitalCoefficients>, $OrbitalCoefficients, <RealTensor>)
            , (<CoulombIntegrals>, $CoulombIntegrals, <RealTensor>)
            , $nelec eq -1 ?? () !! (<nelec>, $nelec)
@@ -369,7 +369,7 @@ our sub FiniteSizeCorrection
   ) of Algorithm is export
   {
   Algorithm.new:
-    :name<FiniteSizeCorrection>
+    :name(&?ROUTINE.name)
     :inputs( (<HoleEigenEnergies>, $h, <RealTensor>)
            , (<ParticleEigenEnergies>, $p, <RealTensor>)
            , (<CoulombVertex>, $vertex, <RealTensor>)
