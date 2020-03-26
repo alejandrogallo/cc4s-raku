@@ -233,7 +233,7 @@ our sub CcsdEnergyFromCoulombIntegralsReference
   ) is export {
 
   Algorithm.new:
-    :name<CcsdEnergyFromCoulombIntegrals>
+    :name<CcsdEnergyFromCoulombIntegralsReference>
     :inputs( (<HoleEigenEnergies>, $h, <RealTensor>)
            , (<ParticleEigenEnergies>, $p, <RealTensor>)
            , (<PPHHCoulombIntegrals>, $pphh, <RealTensor>)
