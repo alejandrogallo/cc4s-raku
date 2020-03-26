@@ -210,12 +210,12 @@ our sub CcsdEnergyFromCoulombIntegrals
 
 #| CcsdEnergyFromCoulombIntegralsReference
 our sub CcsdEnergyFromCoulombIntegralsReference
-  ( Str :PPHHCoulombIntegral($pphh) = <PPHHCoulombIntegral>
-  , Str :PHPHCoulombIntegral($phph) = <PHPHCoulombIntegral>
-  , Str :HHHHCoulombIntegral($hhhh) = <HHHHCoulombIntegral>
-  , Str :HHHPCoulombIntegral($hhhp) = <HHHPCoulombIntegral>
-  , Str :PPPHCoulombIntegral($ppph) = <PPPHCoulombIntegral>
-  , Str :PPPPCoulombIntegral($pppp) = <PPPPCoulombIntegral>
+  ( Str :PPHHCoulombIntegrals($pphh) = <PPHHCoulombIntegrals>
+  , Str :PHPHCoulombIntegrals($phph) = <PHPHCoulombIntegrals>
+  , Str :HHHHCoulombIntegrals($hhhh) = <HHHHCoulombIntegrals>
+  , Str :HHHPCoulombIntegrals($hhhp) = <HHHPCoulombIntegrals>
+  , Str :PPPHCoulombIntegrals($ppph) = <PPPHCoulombIntegrals>
+  , Str :PPPPCoulombIntegrals($pppp) = <PPPPCoulombIntegrals>
   , Str :HoleEigenEnergies($h) = <HoleEigenEnergies>
   , Str :ParticleEigenEnergies($p) = <ParticleEigenEnergies>
   , Str :initialDoublesAmplitudes($i-tabij) = ""
@@ -236,12 +236,12 @@ our sub CcsdEnergyFromCoulombIntegralsReference
     :name<CcsdEnergyFromCoulombIntegrals>
     :inputs( (<HoleEigenEnergies>, $h, <RealTensor>)
            , (<ParticleEigenEnergies>, $p, <RealTensor>)
-           , (<PPHHCoulombIntegral>, $pphh, <RealTensor>)
-           , (<PHPHCoulombIntegral>, $phph, <RealTensor>)
-           , (<HHHHCoulombIntegral>, $hhhh, <RealTensor>)
-           , (<HHHPCoulombIntegral>, $hhhp, <RealTensor>)
-           , (<PPPHCoulombIntegral>, $ppph, <RealTensor>)
-           , (<PPPPCoulombIntegral>, $pppp, <RealTensor>)
+           , (<PPHHCoulombIntegrals>, $pphh, <RealTensor>)
+           , (<PHPHCoulombIntegrals>, $phph, <RealTensor>)
+           , (<HHHHCoulombIntegrals>, $hhhh, <RealTensor>)
+           , (<HHHPCoulombIntegrals>, $hhhp, <RealTensor>)
+           , (<PPPHCoulombIntegrals>, $ppph, <RealTensor>)
+           , (<PPPPCoulombIntegrals>, $pppp, <RealTensor>)
            , $i-tabij ?? (<initialDoublesAmplitudes>, $i-tabij, <RealTensor>) !! ()
            , $i-tai ?? (<initialSinglesAmplitudes>, $i-tai, <RealTensor>) !! ()
            , $ppl ?? (<OnlyPPL>, $ppl) !! ()
