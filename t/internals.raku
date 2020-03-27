@@ -30,3 +30,11 @@ subtest {
   }
 
 }, 'Integrals';
+
+ok $_ eq [], <real-tensor-if-given no input>
+  given real-tensors-if-given :!HH :!PP :!ZZP;
+
+ok do {
+  (sort $_) eq sort [(<HH>, <HH>, <RealTensor>), (<PP>, <PP>, <RealTensor>)]
+}, <real-tensor-if-given some input>
+   given real-tensors-if-given :HH :PP :!ZZP;

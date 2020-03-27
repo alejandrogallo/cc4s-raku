@@ -14,6 +14,7 @@ subtest {
           , &CoulombIntegralsFromVertex
           , &Mp2EnergyFromCoulombIntegrals
           , &CoulombIntegralsFromRotatedCoulombIntegrals
+          , &UccsdAmplitudesFromCoulombIntegrals
         # Hartree fock related
           , &HartreeFockFromGaussian
           , &CoulombIntegralsFromGaussian
