@@ -8,6 +8,7 @@ subtest {
           , &ComplexTensorWriter
           , &ComplexTensorReader
           , &CoulombVertexReader
+          , &TensorAntisymmetrizer
         # Basic algorithms
           , &CcsdEnergyFromCoulombIntegrals
           , &CoulombIntegralsFromVertex

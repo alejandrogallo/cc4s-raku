@@ -60,6 +60,13 @@ variables. Optional and maybe also mandatory.
 subset CoulombIntegral of Str
   where * ∈ (([X~] $_ xx 4) X~ <CoulombIntegrals> given < H P >);
 
+sub real-tensors-if-given (*%tsrs) of Array[DataInput] is export {
+  Array[DataInput].new: (
+    (.keys[0], (.values[0] eq True) ?? .keys[0] !! .values[0], <RealTensor>)
+    for %tsrs ==> grep {.values[0]}
+  )
+}
+
 #| Template function for most tensor input/output functions in cc4s
 sub TensorIO
   ( Str :name($name)
@@ -87,7 +94,7 @@ our &ComplexTensorWriter is export
                          :dtype<ComplexTensor>);
 
 #| CoulombVertexReader
-our sub CoulombVertexReader
+sub CoulombVertexReader
   ( Str :file($file) = ~_PATH_TO_VERTEX_FILE_
   , Str :CoulombVertex($vertex) = <CoulombVertex>
   , Str :HoleEigenEnergies($h) = <HoleEigenEnergies>
@@ -107,17 +114,13 @@ our sub CoulombVertexReader
 
 # Convert a hash of { :PPHHCoulombIntegrals, :WHATEVER }
 # into a list of DataInput of CoulombIntegrals ready to be fed into a cc4s algo
-sub cints-hash-to-input-list (%ints) of Array[DataInput] {
-  Array[DataInput].new: (
-     ( .keys[0]
-     , (.values[0] eq True) ?? .keys[0] !! .values[0]
-     , <RealTensor>
-     ) for (%ints ==> grep {.keys[0] ~~ CoulombIntegral})
-   )
+sub cints-hash-to-input-list (%ints) of Array[DataInput] is export {
+   real-tensors-if-given |$_
+     given hash %ints.grep: {.keys[0] ~~ CoulombIntegral}
 }
 
 #| CoulombIntegralsFromVertex
-our sub CoulombIntegralsFromVertex
+sub CoulombIntegralsFromVertex
   ( Str :CoulombVertex($v) = <CoulombVertex>
   , Str :HoleEigenEnergies($h) = <HoleEigenEnergies>
   , Str :ParticleEigenEnergies($p) = <ParticleEigenEnergies>
@@ -135,7 +138,7 @@ our sub CoulombIntegralsFromVertex
 }
 
 #| Mp2EnergyFromCoulombIntegrals
-our sub Mp2EnergyFromCoulombIntegrals
+sub Mp2EnergyFromCoulombIntegrals
   ( Str :PPHHCoulombIntegrals($pphh) = <PPHHCoulombIntegrals>
   , Str :HoleEigenEnergies($h) = <HoleEigenEnergies>
   , Str :ParticleEigenEnergies($p) = <ParticleEigenEnergies>
@@ -156,7 +159,7 @@ our sub Mp2EnergyFromCoulombIntegrals
 }
 
 #| CcsdEnergyFromCoulombIntegrals
-our sub CcsdEnergyFromCoulombIntegrals
+sub CcsdEnergyFromCoulombIntegrals
   ( Str :PPHHCoulombIntegrals($pphh) = <PPHHCoulombIntegrals>
   , Str :PHPHCoulombIntegrals($phph) = <PHPHCoulombIntegrals>
   , Str :HHHHCoulombIntegrals($hhhh) = <HHHHCoulombIntegrals>
@@ -209,7 +212,7 @@ our sub CcsdEnergyFromCoulombIntegrals
 }
 
 #| CcsdEnergyFromCoulombIntegralsReference
-our sub CcsdEnergyFromCoulombIntegralsReference
+sub CcsdEnergyFromCoulombIntegralsReference
   ( Str :PPHHCoulombIntegrals($pphh) = <PPHHCoulombIntegrals>
   , Str :PHPHCoulombIntegrals($phph) = <PHPHCoulombIntegrals>
   , Str :HHHHCoulombIntegrals($hhhh) = <HHHHCoulombIntegrals>
@@ -261,7 +264,7 @@ our sub CcsdEnergyFromCoulombIntegralsReference
 }
 
 #| CoulombIntegralsFromGaussian
-our sub CoulombIntegralsFromGaussian
+sub CoulombIntegralsFromGaussian
   ( Str :xyzStructureFile($structure) = ~_PATH_TO_XYZ_FILE_
   , Str :basisSet($basis) = ~_BASIS_SET_
   , Str :CoulombIntegrals($cs) = <CoulombIntegrals>
@@ -356,9 +359,8 @@ sub CoulombIntegralsFromRotatedCoulombIntegrals
     :outputs(cints-hash-to-input-list %ints)
 }
 
-
 #| FiniteSizeCorrection
-our sub FiniteSizeCorrection
+sub FiniteSizeCorrection
   ( Str :CoulombVertex($vertex) = <CoulombVertex>
   , Str :CoulombKernel($kernel) = <CoulombKernel>
   , Str :HoleEigenEnergies($h) = <HoleEigenEnergies>
@@ -378,4 +380,80 @@ our sub FiniteSizeCorrection
            , (<DoublesAmplitudes>, $tabij, <RealTensor>)
            )
     :outputs( (<StructureFactor>, $sofg, <RealTensor>), )
+}
+
+sub TensorAntisymmetrizer(*%ints) of Algorithm is export {
+  Algorithm.new: :name<TensorAntisymmetrizer>
+                 :inputs(cints-hash-to-input-list %ints)
+}
+
+sub UccsdAmplitudesFromCoulombIntegrals
+  ( Boolean :$intermediates = 1
+  , Boolean :$antisymmetrize = 1
+  , Boolean :$unrestricted = 1
+  , Str :mixer($mixer) = ""
+  , Real :mixingRatio($mixRat) = -1
+  , Int :MaxResidua($maxRes) = 0
+  , Int :maxIterations($maxIter) = 0
+  , Real :amplitudesConvergence($ampConv) = -1
+  , Real :energyConvergence($enConv) = -1
+  , Str :$HoleEigenEnergies
+  , Str :$ParticleEigenEnergies
+  , Str :$initialDoublesAmplitudes
+  , Str :$initialSinglesAmplitudes
+  , Str :$HPFockMatrix = ""
+  , Str :$PPFockMatrix = ""
+  , Str :$HHFockMatrix = ""
+  , Str :$UccsdDoublesAmplitudes = ""
+  , Str :$UccsdSinglesAmplitudes = ""
+  , Str :$UccsdEnergy = ""
+  , Str :$HHHHCoulombIntegrals = <HHHHCoulombIntegrals>
+  , Str :$HHHPCoulombIntegrals = <HHHPCoulombIntegrals>
+  , Str :$HHPHCoulombIntegrals = <HHPHCoulombIntegrals>
+  , Str :$HHPPCoulombIntegrals = <HHPPCoulombIntegrals>
+  , Str :$HPHHCoulombIntegrals = <HPHHCoulombIntegrals>
+  , Str :$HPHPCoulombIntegrals = <HPHPCoulombIntegrals>
+  , Str :$HPPHCoulombIntegrals = <HPPHCoulombIntegrals>
+  , Str :$HPPPCoulombIntegrals = <HPPPCoulombIntegrals>
+  , Str :$PHHPCoulombIntegrals = <PHHPCoulombIntegrals>
+  , Str :$PHPHCoulombIntegrals = <PHPHCoulombIntegrals>
+  , Str :$PHPPCoulombIntegrals = <PHPPCoulombIntegrals>
+  , Str :$PPHHCoulombIntegrals = <PPHHCoulombIntegrals>
+  , Str :$PPHPCoulombIntegrals = <PPHPCoulombIntegrals>
+  , Str :$PPPHCoulombIntegrals = <PPPHCoulombIntegrals>
+  , Str :$PPPPCoulombIntegrals = <PPPPCoulombIntegrals>
+  ) of Algorithm is export
+  {
+
+  Algorithm.new:
+    :name(&?ROUTINE.name)
+    :inputs( (<intermediates>, $intermediates)
+           , (<antisymmetrize>, $antisymmetrize)
+           , (<unrestricted>, $unrestricted)
+           , $mixer ?? (<Mixer>, $mixer) !! ()
+           , ($mixRat > 0) ?? (<mixingRatio>, $mixRat) !! ()
+           , $maxRes ?? (<MaxResidua>, $maxRes) !! ()
+           , $maxIter ?? (<maxIterations>, $maxIter) !! ()
+           , ($ampConv > 0) ?? (<amplitudesConvergence> , $ampConv) !! ()
+           , ($enConv > 0) ?? (<energyConvergence> , $enConv) !! ()
+           , |$_ given real-tensors-if-given
+                 :$HHHHCoulombIntegrals :$HHHPCoulombIntegrals
+                 :$HHPHCoulombIntegrals :$HHPPCoulombIntegrals
+                 :$HPHHCoulombIntegrals :$HPHPCoulombIntegrals
+                 :$HPPHCoulombIntegrals :$HPPPCoulombIntegrals
+                 :$PHHPCoulombIntegrals :$PHPHCoulombIntegrals
+                 :$PHPPCoulombIntegrals :$PPHHCoulombIntegrals
+                 :$PPHPCoulombIntegrals :$PPPHCoulombIntegrals
+                 :$PPPPCoulombIntegrals
+                 :$HPFockMatrix :$PPFockMatrix :$HHFockMatrix
+                 :$HoleEigenEnergies
+                 :$ParticleEigenEnergies
+                 :$initialDoublesAmplitudes
+                 :$initialSinglesAmplitudes
+           )
+    :outputs( |$_ given real-tensors-if-given :$UccsdEnergy
+                                              :$UccsdDoublesAmplitudes
+                                              :$UccsdSinglesAmplitudes
+            )
+
 }
