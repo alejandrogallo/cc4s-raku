@@ -383,8 +383,19 @@ sub FiniteSizeCorrection
 }
 
 sub TensorAntisymmetrizer(*%ints) of Algorithm is export {
-  Algorithm.new: :name<TensorAntisymmetrizer>
+  Algorithm.new: :name(&?ROUTINE.name)
                  :inputs(cints-hash-to-input-list %ints)
+}
+
+sub TensorUnrestricter
+  ( Str :$Data is required
+  , Str :$Out = $Data
+  ) of Algorithm is export
+  {
+  Algorithm.new:
+    :name(&?ROUTINE.name)
+    :inputs( real-tensors-if-given :$Data )
+    :outputs( real-tensors-if-given :$Out )
 }
 
 sub UccsdAmplitudesFromCoulombIntegrals
@@ -427,9 +438,9 @@ sub UccsdAmplitudesFromCoulombIntegrals
 
   Algorithm.new:
     :name(&?ROUTINE.name)
-    :inputs( (<intermediates>, $intermediates)
-           , (<antisymmetrize>, $antisymmetrize)
-           , (<unrestricted>, $unrestricted)
+    :inputs( :$intermediates.kv.list
+           , :$antisymmetrize.kv.list
+           , :$unrestricted.kv.list
            , $mixer ?? (<Mixer>, $mixer) !! ()
            , ($mixRat > 0) ?? (<mixingRatio>, $mixRat) !! ()
            , $maxRes ?? (<MaxResidua>, $maxRes) !! ()
@@ -456,4 +467,83 @@ sub UccsdAmplitudesFromCoulombIntegrals
                                               :$UccsdSinglesAmplitudes
             )
 
+}
+
+grammar cc4s-range {
+  token TOP { <single-range>* %% \, }
+  token single-range { \s*\d+\s*[\-\s*\d+]?\s* }
+}
+
+sub CcsdEquationOfMotionDavidson
+  ( Boolean :$complexVersion = 1
+  , Str :$oneBodyRdmRange where {cc4s-range.parse($_)} = ""
+  , Str :$printEigenvectorsDoubles where {cc4s-range.parse($_)} = ""
+  , Str :$printEigenvectorsRange where {cc4s-range.parse($_)} = ""
+  # Davidson solver
+  , Real :$ediff = 0.00000001
+  , Int :$maxBasisSize = 0
+  , Boolean :$intermediates = 1
+  , Int :$eigenstates is required = 2
+  , Boolean :$refreshIterations =  0
+  , Boolean :$refreshOnMaxBasisSize = 0
+  , Int :$maxIterations = 32
+  , Int :$minIterations = 1
+  # preconditioner
+  , Boolean :$preconditionerRandom = 0
+  , Real :$preconditionerRandomSigma = 0.01
+  , Boolean :$preconditionerSpinFlip = 0
+  # T amplitudes
+  , Str :$SinglesAmplitudes is required
+  , Str :$DoublesAmplitudes is required
+  # Fock Matrix
+  , Str :$ParticleEigenEnergies = <ParticleEigenEnergies>
+  , Str :$HoleEigenEnergies = <HoleEigenEnergies>
+  , Str :$HPFockMatrix = <HPFockMatrix>
+  , Str :$HHFockMatrix = <HHFockMatrix>
+  , Str :$PPFockMatrix = <PPFockMatrix>
+  , Str :$HHHHCoulombIntegrals = <HHHHCoulombIntegrals>
+  , Str :$PPPPCoulombIntegrals = <PPPPCoulombIntegrals>
+  , Str :$HHHPCoulombIntegrals = <HHHPCoulombIntegrals>
+  , Str :$HHPPCoulombIntegrals = <HHPPCoulombIntegrals>
+  , Str :$HPHHCoulombIntegrals = <HPHHCoulombIntegrals>
+  , Str :$HPHPCoulombIntegrals = <HPHPCoulombIntegrals>
+  , Str :$HPPPCoulombIntegrals = <HPPPCoulombIntegrals>
+  , Str :$PPHPCoulombIntegrals = <PPHPCoulombIntegrals>
+  , Str :$PPPHCoulombIntegrals = <PPPHCoulombIntegrals>
+  , Str :$PHPPCoulombIntegrals = <PHPPCoulombIntegrals>
+  , Str :$PHPHCoulombIntegrals = <PHPHCoulombIntegrals>
+  , Str :$HPPHCoulombIntegrals = <HPPHCoulombIntegrals>
+  , Str :$HHPHCoulombIntegrals = <HHPHCoulombIntegrals>
+  , Str :$PHHPCoulombIntegrals = <PHHPCoulombIntegrals>
+  ) of Algorithm is export
+  {
+  Algorithm.new:
+    :name(&?ROUTINE.name)
+    :inputs( :$complexVersion.kv.list
+           , :$oneBodyRdmRange.kv.list
+           , :$printEigenvectorsDoubles.kv.list
+           , :$printEigenvectorsRange.kv.list
+           , :$ediff.kv.list
+           , :$intermediates.kv.list
+           , $maxBasisSize ?? :$maxBasisSize.kv.list !! ()
+           , :$eigenstates.kv.list
+           , :$refreshIterations.kv.list
+           , :$refreshOnMaxBasisSize.kv.list
+           , :$maxIterations.kv.list
+           , :$minIterations.kv.list
+           , :$preconditionerRandom.kv.list
+           , :$preconditionerRandomSigma.kv.list
+           , :$preconditionerSpinFlip.kv.list
+           , |$_ given real-tensors-if-given
+                 :$HHHHCoulombIntegrals :$PPPPCoulombIntegrals
+                 :$HHHPCoulombIntegrals :$HHPPCoulombIntegrals
+                 :$HPHHCoulombIntegrals :$HPHPCoulombIntegrals
+                 :$HPPPCoulombIntegrals :$PPHPCoulombIntegrals
+                 :$PPPHCoulombIntegrals :$PHPPCoulombIntegrals
+                 :$PHPHCoulombIntegrals :$HPPHCoulombIntegrals
+                 :$HHPHCoulombIntegrals :$PHHPCoulombIntegrals
+                 :$HPFockMatrix :$PPFockMatrix :$HHFockMatrix
+                 :$HoleEigenEnergies :$ParticleEigenEnergies
+                 :$DoublesAmplitudes :$SinglesAmplitudes
+           )
 }
