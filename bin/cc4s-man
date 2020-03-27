@@ -1,0 +1,11 @@
+#!/usr/bin/env raku
+use Cc4s;
+
+#| Look up the definition of a cc4s algorithm
+sub MAIN (Str $algorithm) {
+  my Str $help = ::("&$algorithm").signature.gist;
+  CATCH { say "Algorithm $algorithm not implemented"; exit 1; }
+  $help .= subst: /","/, "\n,", :g;
+  $help .= subst: /^^ \((\w)/, {"( $0"};
+  say $help;
+}
