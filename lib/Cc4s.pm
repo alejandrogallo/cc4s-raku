@@ -38,6 +38,7 @@ class Algorithm is export {
   has Str $.name;
   has Input @.inputs;
   has Input @.outputs;
+  has Signature $.signature;
   method Str {qq!
 $.name [
   { (@.inputs  ==> map &to-string ==> grep /^^ . + $$/ ).join: "\n  " }
@@ -51,10 +52,14 @@ $.name [
   method add-outputs (@o) of Algorithm { @.outputs.append:
                                           Array[Input].new(@o); self }
 
-  method help {qq!
-We just want to help you. Here I want an overview of possible input/output
-variables. Optional and maybe also mandatory.
-!}
+  method help {
+    qq!
+    The signature of the $!name is
+
+    { $!signature.gist.subst: /\,/, "\n", :g }
+
+    !
+  }
 }
 
 subset CoulombIntegral of Str
@@ -69,16 +74,17 @@ sub real-tensors-if-given (*%tsrs) of Array[DataInput] is export {
 
 #| Template function for most tensor input/output functions in cc4s
 sub TensorIO
-  ( Str :name($name)
-  , Str :Data($data) = ~_TENSOR_NAME_
-  , Str :file($file) = ""
-  , Bool :bin($bin) = False
+  ( Str :$name
+  , Str :$Data = ~_TENSOR_NAME_
+  , Str :$file = ""
+  , Bool :$bin = False
   , DataType :dtype($dtype) = <RealTensor>
   ) of Algorithm
   {
   Algorithm.new:
     :name($name)
-    :inputs( (<Data>, $data, $dtype)
+    :signature(&?ROUTINE.signature)
+    :inputs( (<Data>, $Data, $dtype)
            , $file ?? (<file>, $file) !! ()
            , $bin ?? (<mode>, <binary>) !! ()
            )
@@ -104,6 +110,7 @@ sub CoulombVertexReader
 
   Algorithm.new:
     :name(&?ROUTINE.name)
+    :signature(&?ROUTINE.signature)
     :inputs( (<file>, $file), )
     :outputs( (<CoulombVertex>, $vertex, <RealTensor>)
             , (<HoleEigenEnergies>, $h, <RealTensor>)
@@ -130,6 +137,7 @@ sub CoulombIntegralsFromVertex
   {
   Algorithm.new:
     :name(&?ROUTINE.name)
+    :signature(&?ROUTINE.signature)
     :inputs( (<CoulombVertex>, $v, <RealTensor>)
            , (<HoleEigenEnergies>, $h, <RealTensor>)
            , (<ParticleEigenEnergies>, $p, <RealTensor>)
@@ -148,6 +156,7 @@ sub Mp2EnergyFromCoulombIntegrals
 
   Algorithm.new:
     :name(&?ROUTINE.name)
+    :signature(&?ROUTINE.signature)
     :inputs( (<HoleEigenEnergies>, $h, <RealTensor>)
            , (<ParticleEigenEnergies>, $p, <RealTensor>)
            , (<PPHHCoulombIntegrals>, $pphh, <RealTensor>)
@@ -185,6 +194,7 @@ sub CcsdEnergyFromCoulombIntegrals
 
   Algorithm.new:
     :name(&?ROUTINE.name)
+    :signature(&?ROUTINE.signature)
     :inputs( (<CoulombVertex>, $vertex, <RealTensor>)
            , (<HoleEigenEnergies>, $h, <RealTensor>)
            , (<ParticleEigenEnergies>, $p, <RealTensor>)
@@ -237,6 +247,7 @@ sub CcsdEnergyFromCoulombIntegralsReference
 
   Algorithm.new:
     :name(&?ROUTINE.name)
+    :signature(&?ROUTINE.signature)
     :inputs( (<HoleEigenEnergies>, $h, <RealTensor>)
            , (<ParticleEigenEnergies>, $p, <RealTensor>)
            , (<PPHHCoulombIntegrals>, $pphh, <RealTensor>)
@@ -275,6 +286,7 @@ sub CoulombIntegralsFromGaussian
 
   Algorithm.new:
     :name(&?ROUTINE.name)
+    :signature(&?ROUTINE.signature)
     :inputs( (<xyzStructureFile>, $structure)
            , (<basisSet>, $basis)
            , (<kernel>, $kernel)
@@ -304,6 +316,7 @@ sub HartreeFockFromGaussian
 
   Algorithm.new:
     :name(&?ROUTINE.name)
+    :signature(&?ROUTINE.signature)
     :inputs( (<xyzStructureFile>, $structure)
            , (<basisSet>, $basis)
            , (<maxIterations>, $max-iter)
@@ -330,6 +343,7 @@ sub MeanCorrelationHoleDepth
 
   Algorithm.new:
     :name(&?ROUTINE.name)
+    :signature(&?ROUTINE.signature)
     :inputs( (<DoublesAmplitudes>, $DoublesAmplitudes, <RealTensor>)
            , (<PPHHDelta>, $PPHHDelta, <RealTensor>)
            )
@@ -350,6 +364,7 @@ sub CoulombIntegralsFromRotatedCoulombIntegrals
   {
   Algorithm.new:
     :name(&?ROUTINE.name)
+    :signature(&?ROUTINE.signature)
     :inputs( (<OrbitalCoefficients>, $OrbitalCoefficients, <RealTensor>)
            , (<CoulombIntegrals>, $CoulombIntegrals, <RealTensor>)
            , $nelec eq -1 ?? () !! (<nelec>, $nelec)
@@ -372,6 +387,7 @@ sub FiniteSizeCorrection
   {
   Algorithm.new:
     :name(&?ROUTINE.name)
+    :signature(&?ROUTINE.signature)
     :inputs( (<HoleEigenEnergies>, $h, <RealTensor>)
            , (<ParticleEigenEnergies>, $p, <RealTensor>)
            , (<CoulombVertex>, $vertex, <RealTensor>)
@@ -384,6 +400,7 @@ sub FiniteSizeCorrection
 
 sub TensorAntisymmetrizer(*%ints) of Algorithm is export {
   Algorithm.new: :name(&?ROUTINE.name)
+                 :signature(&?ROUTINE.signature)
                  :inputs(cints-hash-to-input-list %ints)
 }
 
@@ -394,6 +411,7 @@ sub TensorUnrestricter
   {
   Algorithm.new:
     :name(&?ROUTINE.name)
+    :signature(&?ROUTINE.signature)
     :inputs( real-tensors-if-given :$Data )
     :outputs( real-tensors-if-given :$Out )
 }
@@ -438,6 +456,7 @@ sub UccsdAmplitudesFromCoulombIntegrals
 
   Algorithm.new:
     :name(&?ROUTINE.name)
+    :signature(&?ROUTINE.signature)
     :inputs( :$intermediates.kv.list
            , :$antisymmetrize.kv.list
            , :$unrestricted.kv.list
@@ -519,6 +538,7 @@ sub CcsdEquationOfMotionDavidson
   {
   Algorithm.new:
     :name(&?ROUTINE.name)
+    :signature(&?ROUTINE.signature)
     :inputs( :$complexVersion.kv.list
            , :$oneBodyRdmRange.kv.list
            , :$printEigenvectorsDoubles.kv.list
